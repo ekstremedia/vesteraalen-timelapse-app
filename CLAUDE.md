@@ -253,24 +253,34 @@ version: 1.0.0+1
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Camera list (home) | 🔲 Pending | Grid of camera thumbnails |
-| Camera detail | 🔲 Pending | Timelapse viewer + images |
-| Date navigation | 🔲 Pending | Previous/next/today/picker |
-| YouTube player | 🔲 Pending | Embedded timelapse playback |
-| Dark/light theme | 🔲 Pending | Matches website |
-| Localization (nb/nn/en) | 🔲 Pending | 3 languages |
-| Settings page | 🔲 Pending | Theme + language selection |
-| CI/CD Android | 🔲 Pending | GitHub Actions |
-| CI/CD iOS | 🔲 Pending | Xcode Cloud |
+| Camera list (home) | ✅ Done | Grid of camera thumbnails |
+| Camera detail | ✅ Done | Timelapse viewer + images |
+| Date navigation | ✅ Done | Previous/next/today/picker |
+| YouTube player | ✅ Done | Embedded timelapse playback |
+| Dark/light theme | ✅ Done | Matches website |
+| Localization (nb/nn/en) | ✅ Done | 3 languages |
+| Settings page | ✅ Done | Theme + language selection |
+| CI/CD Android | ✅ Done | GitHub Actions + Firebase App Distribution |
+| CI/CD iOS | 🔲 Pending | Xcode Cloud (signing not configured) |
+| Google Play Store | 🔲 Pending | Internal testing track |
+| Apple App Store | 🔲 Pending | TestFlight |
 
 ---
 
 ## Recent Changes
 
+### 2026-01-01
+- Set up Firebase project (Android + iOS apps)
+- Created Android signing keystore
+- Configured GitHub secrets for CI/CD
+- Fixed Flutter/Dart version compatibility (3.38.5)
+- Fixed intl package conflicts
+- Added pre-commit hook for auto-formatting
+- Updated all workflows with concurrency settings
+
 ### 2025-12-31
 - Created Flutter project with `flutter create --org no.ekstremedia`
-- Configured pubspec.yaml with dependencies
-- Set up project directory structure
-- Created CLAUDE.md documentation
-- Created FLUTTER_APP_HOWTO.md guide
-- Created initial development log
+- Implemented all core features (cameras, timelapse, settings)
+- Created 42 Flutter tests, 13 Laravel tests
+- Set up CI/CD workflows
+- Created documentation

@@ -149,7 +149,7 @@ publish_to: 'none'
 version: 1.0.0+1  # version+buildNumber
 
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
@@ -185,12 +185,46 @@ API_BASE_URL=https://your-api.com
 *.keystore
 *.jks
 key.properties
+android/app/*.jks
 
 # iOS
 ios/Runner/GoogleService-Info.plist
 
 # Android
 android/app/google-services.json
+
+# Firebase configs in root
+/GoogleService-Info.plist
+/google-services.json
+/*-firebase-adminsdk-*.json
+
+# Secrets documentation
+keys.md
+```
+
+### Pre-commit Hook (Auto-format)
+
+Create `scripts/setup-hooks.sh`:
+```bash
+#!/bin/sh
+HOOK_DIR=".git/hooks"
+
+cat > "$HOOK_DIR/pre-commit" << 'EOF'
+#!/bin/sh
+echo "Running dart format..."
+dart format .
+git add -u
+echo "Dart formatting complete."
+EOF
+
+chmod +x "$HOOK_DIR/pre-commit"
+echo "Git hooks installed!"
+```
+
+Run after cloning:
+```bash
+chmod +x scripts/setup-hooks.sh
+./scripts/setup-hooks.sh
 ```
 
 ---
@@ -424,33 +458,34 @@ on:
   pull_request:
     branches: [main, develop]
 
-jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.38.4'
-          cache: true
-      - run: cp .env.example .env
-      - run: flutter pub get
-      - run: flutter analyze --no-fatal-infos
+# Cancel outdated runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-  test:
-    name: Test
+jobs:
+  analyze-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # IMPORTANT: Specify exact version, avoid cache for consistency
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.4'
-          cache: true
-      - run: cp .env.example .env
+          flutter-version: '3.38.5'
+          channel: 'stable'
+
       - run: flutter pub get
+      - run: cp .env.example .env
+      - run: flutter analyze
       - run: flutter test --coverage
+      - run: dart format --output=none --set-exit-if-changed .
 ```
+
+**Important CI Notes:**
+- Always specify exact Flutter version (e.g., `3.38.5`)
+- Avoid `cache: true` if you have version conflicts
+- Use `concurrency` to cancel outdated workflow runs
 
 ### GitHub Actions: Android Deploy
 
@@ -698,6 +733,10 @@ Builds appear in App Store Connect automatically:
 | Signing issues (Android) | Verify `key.properties` paths |
 | Signing issues (iOS) | Check certificates in Xcode → Signing & Capabilities |
 | Firebase upload fails | Re-authenticate: `firebase login --reauth` |
+| `intl` version conflict | Use `intl: any` - let Flutter resolve it |
+| `withValues()` not defined | Use `withOpacity()` instead (older Flutter) |
+| CI uses wrong Flutter version | Specify exact version + remove `cache: true` |
+| Dart format fails in CI | Add pre-commit hook to auto-format |
 
 ### Useful Commands
 
@@ -730,4 +769,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2025-12-31*
+*Last updated: 2026-01-01*
