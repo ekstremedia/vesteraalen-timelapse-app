@@ -210,6 +210,7 @@ class CameraDetailPage extends ConsumerWidget {
         enableCaption: false,
         playsInline: true,
         strictRelatedVideos: true,
+        origin: 'https://www.youtube.com',
       ),
     );
 
@@ -230,9 +231,16 @@ class CameraDetailPage extends ConsumerWidget {
                 children: [
                   const Icon(Icons.play_circle_outline, color: Colors.red),
                   const SizedBox(width: 8),
-                  Text(
-                    l10n.timelapse,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Expanded(
+                    child: Text(
+                      l10n.timelapse,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _openYouTube(youtubeId),
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: Text(l10n.watchOnYoutube),
                   ),
                 ],
               ),
