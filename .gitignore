@@ -59,6 +59,9 @@ ios/Runner/GoogleService-Info.plist
 # Secrets documentation
 keys.md
 
+# iOS certificates and provisioning profiles
+certificates/
+
 # Firebase config files in root (keep them in proper locations only)
 /GoogleService-Info.plist
 /google-services.json
