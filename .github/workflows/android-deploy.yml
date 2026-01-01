@@ -95,6 +95,14 @@ jobs:
       - name: Build release App Bundle
         run: flutter build appbundle --release
 
+      - name: Debug secrets
+        run: |
+          echo "App ID length: ${#APP_ID}"
+          echo "Service account length: ${#SERVICE_ACCOUNT}"
+        env:
+          APP_ID: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
       - name: Upload APK to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
@@ -103,6 +111,7 @@ jobs:
           groups: testers
           file: build/app/outputs/flutter-apk/app-release.apk
           releaseNotes: ${{ github.event.inputs.release_notes || github.event.head_commit.message }}
+          debug: true
 
       - name: Upload App Bundle artifact
         uses: actions/upload-artifact@v4
