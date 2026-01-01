@@ -484,8 +484,35 @@ jobs:
 
 **Important CI Notes:**
 - Always specify exact Flutter version (e.g., `3.38.5`)
-- Avoid `cache: true` if you have version conflicts
+- Use `cache: true` for Flutter to speed up builds
 - Use `concurrency` to cancel outdated workflow runs
+- Cache Gradle and Android SDK (CMake) to avoid slow reinstalls
+
+### CI Caching for Faster Builds
+
+Add these caching steps to avoid slow CMake/Gradle downloads:
+
+```yaml
+- name: Cache Gradle
+  uses: actions/cache@v4
+  with:
+    path: |
+      ~/.gradle/caches
+      ~/.gradle/wrapper
+    key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    restore-keys: |
+      gradle-${{ runner.os }}-
+
+- name: Cache Android SDK
+  uses: actions/cache@v4
+  with:
+    path: |
+      /usr/local/lib/android/sdk/cmake
+      /usr/local/lib/android/sdk/ndk
+    key: android-sdk-${{ runner.os }}-cmake-3.22.1
+    restore-keys: |
+      android-sdk-${{ runner.os }}-
+```
 
 ### GitHub Actions: Android Deploy
 
@@ -561,8 +588,20 @@ Add these in **Settings** → **Secrets and variables** → **Actions**:
 
 | Secret | Source |
 |--------|--------|
-| `FIREBASE_ANDROID_APP_ID` | Firebase Console → Project Settings → Your Apps → App ID |
-| `FIREBASE_SERVICE_ACCOUNT` | Google Cloud Console → Service Account JSON (entire file content) |
+| `API_BASE_URL` | Your API URL (e.g., `https://ekstremedia.no/api/app`) |
+| `ANDROID_KEYSTORE_BASE64` | Run: `base64 -i android/app/upload-keystore.jks` |
+| `ANDROID_KEYSTORE_PASSWORD` | Your keystore password |
+| `ANDROID_KEY_PASSWORD` | Your key password |
+| `ANDROID_KEY_ALIAS` | `upload` |
+| `FIREBASE_ANDROID_APP_ID` | Firebase Console → Project Settings → Your Apps → App ID (e.g., `1:123456789:android:abc123`) |
+| `FIREBASE_SERVICE_ACCOUNT` | Firebase Console → Project Settings → Service accounts → Generate new private key (paste entire JSON) |
+
+### Firebase App Distribution Setup
+
+1. Firebase Console → **Release & Monitor** → **App Distribution**
+2. **Testers & Groups** tab → **Add group** → name it `testers`
+3. Add your email address to the group
+4. Trigger the workflow - you'll receive an email invite to test
 
 ### Xcode Cloud Setup (iOS)
 
