@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126129358680",
+    "project_id": "vesteraalen-timelapse",
+    "storage_bucket": "vesteraalen-timelapse.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126129358680:android:78c603d90439a49b7c472d",
+        "android_client_info": {
+          "package_name": "no.ekstremedia.vesteraalen_timelapse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtBQdJq4nIlEvD1_gfu7K9GJmZE90o3sI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
