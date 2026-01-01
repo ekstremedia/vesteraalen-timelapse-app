@@ -71,7 +71,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          side: BorderSide(color: primaryColor.withValues(alpha: 0.4)),
+          side: BorderSide(color: primaryColor.withOpacity(0.4)),
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -86,14 +86,14 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceContainerDark,
         elevation: 1,
-        shadowColor: Colors.black.withValues(alpha: 0.3),
+        shadowColor: Colors.black.withOpacity( 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(
-        color: onSurfaceVariantDark.withValues(alpha: 0.2),
+        color: onSurfaceVariantDark.withOpacity( 0.2),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surfaceContainerDark,
@@ -104,7 +104,7 @@ class AppTheme {
             return Colors.black;
           }
           if (states.contains(WidgetState.disabled)) {
-            return onSurfaceVariantDark.withValues(alpha: 0.4);
+            return onSurfaceVariantDark.withOpacity( 0.4);
           }
           return onSurfaceDark;
         }),
@@ -171,7 +171,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          side: BorderSide(color: primaryDark.withValues(alpha: 0.3)),
+          side: BorderSide(color: primaryDark.withOpacity( 0.3)),
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -186,14 +186,14 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceContainerLight,
         elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.08),
+        shadowColor: Colors.black.withOpacity( 0.08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(
-        color: onSurfaceVariantLight.withValues(alpha: 0.2),
+        color: onSurfaceVariantLight.withOpacity( 0.2),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surfaceContainerLight,
@@ -204,7 +204,7 @@ class AppTheme {
             return Colors.white;
           }
           if (states.contains(WidgetState.disabled)) {
-            return onSurfaceVariantLight.withValues(alpha: 0.4);
+            return onSurfaceVariantLight.withOpacity( 0.4);
           }
           return onSurfaceLight;
         }),

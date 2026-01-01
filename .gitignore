@@ -58,3 +58,8 @@ ios/Runner/GoogleService-Info.plist
 
 # Secrets documentation
 keys.md
+
+# Firebase config files in root (keep them in proper locations only)
+/GoogleService-Info.plist
+/google-services.json
+/*-firebase-adminsdk-*.json
