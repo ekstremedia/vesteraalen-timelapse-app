@@ -47,4 +47,27 @@ class EnvConfig {
   /// Polling interval for camera updates in seconds.
   static int get pollingInterval =>
       int.tryParse(dotenv.env['POLLING_INTERVAL'] ?? '') ?? 60;
+
+  /// Whether WebSocket is enabled.
+  static bool get webSocketEnabled =>
+      dotenv.env['WEBSOCKET_ENABLED']?.toLowerCase() == 'true';
+
+  /// Reverb WebSocket host.
+  static String get reverbHost => dotenv.env['REVERB_HOST'] ?? 'localhost';
+
+  /// Reverb WebSocket port.
+  static int get reverbPort =>
+      int.tryParse(dotenv.env['REVERB_PORT'] ?? '') ?? 8080;
+
+  /// Reverb WebSocket scheme (ws or wss).
+  static String get reverbScheme => dotenv.env['REVERB_SCHEME'] ?? 'ws';
+
+  /// Reverb app key.
+  static String get reverbAppKey => dotenv.env['REVERB_APP_KEY'] ?? '';
+
+  /// Full WebSocket URL for Reverb connection.
+  static String get webSocketUrl {
+    final scheme = reverbScheme == 'https' ? 'wss' : 'ws';
+    return '$scheme://$reverbHost:$reverbPort/app/$reverbAppKey';
+  }
 }

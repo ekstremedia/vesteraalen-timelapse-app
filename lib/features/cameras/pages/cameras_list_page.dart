@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vesteraalen_timelapse/core/providers/websocket_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/pages/camera_detail_page.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/cameras_provider.dart';
@@ -17,11 +18,14 @@ class CamerasListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final camerasState = ref.watch(camerasProvider);
+    final wsConnection = ref.watch(webSocketConnectionProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          // WebSocket connection indicator (debug)
+          _buildWebSocketIndicator(wsConnection),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: l10n.settings,
@@ -104,11 +108,7 @@ class CamerasListPage extends ConsumerWidget {
 
     return CustomScrollView(
       slivers: [
-        // Show subtle loading indicator when refreshing in background
-        if (state.isLoading)
-          const SliverToBoxAdapter(child: LinearProgressIndicator()),
-
-        // Camera grid
+        // Camera grid (no loading indicator for silent background updates)
         SliverPadding(
           padding: const EdgeInsets.all(16),
           sliver: SliverGrid(
@@ -182,5 +182,34 @@ class CamerasListPage extends ConsumerWidget {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (context) => const SettingsPage()));
+  }
+
+  /// Build WebSocket connection indicator.
+  /// Green = connected, Red = disconnected, Grey = disabled/loading.
+  Widget _buildWebSocketIndicator(AsyncValue<bool?> connectionState) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Center(
+        child: Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: connectionState.when(
+              data: (isConnected) {
+                if (isConnected == null) return Colors.grey; // Disabled
+                return isConnected ? Colors.green : Colors.red;
+              },
+              loading: () => Colors.grey,
+              error: (_, _) => Colors.red,
+            ),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.5),
+              width: 1,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

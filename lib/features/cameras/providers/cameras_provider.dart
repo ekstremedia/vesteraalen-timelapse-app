@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vesteraalen_timelapse/core/config/env_config.dart';
+import 'package:vesteraalen_timelapse/core/providers/websocket_provider.dart';
 import 'package:vesteraalen_timelapse/core/services/api_client.dart';
 import 'package:vesteraalen_timelapse/core/services/cache_service.dart';
+import 'package:vesteraalen_timelapse/core/services/websocket_service.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/services/camera_service.dart';
 
@@ -64,29 +67,81 @@ final camerasProvider = NotifierProvider<CamerasNotifier, CamerasState>(
   CamerasNotifier.new,
 );
 
-/// Notifier for managing cameras list state with polling.
+/// Notifier for managing cameras list state with polling and WebSocket.
 class CamerasNotifier extends Notifier<CamerasState> {
   Timer? _pollingTimer;
+  StreamSubscription<CameraImageUpdateEvent>? _webSocketSubscription;
 
   @override
   CamerasState build() {
-    // Clean up timer when provider is disposed
+    // Clean up when provider is disposed
     ref.onDispose(() {
       _pollingTimer?.cancel();
+      _webSocketSubscription?.cancel();
     });
 
-    // Defer polling until after build() completes and state is initialized
-    Future.microtask(() => _startPolling());
+    // Defer initialization until after build() completes
+    Future.microtask(() => _initialize());
 
     return const CamerasState(isLoading: true);
   }
 
-  void _startPolling() {
+  void _initialize() {
     // Initial load
     loadCameras();
 
-    // Set up polling timer
-    final interval = Duration(seconds: EnvConfig.pollingInterval);
+    // Set up WebSocket if enabled
+    _setupWebSocket();
+
+    // Set up polling as fallback (longer interval when WebSocket is active)
+    _startPolling();
+  }
+
+  void _setupWebSocket() {
+    if (!EnvConfig.webSocketEnabled) return;
+
+    final webSocketService = ref.read(webSocketServiceProvider);
+
+    // Connect to WebSocket
+    webSocketService.connect();
+
+    // Listen for camera image updates
+    _webSocketSubscription = webSocketService.cameraImageUpdates.listen(
+      _onCameraImageUpdate,
+    );
+  }
+
+  void _onCameraImageUpdate(CameraImageUpdateEvent event) {
+    debugPrint('WebSocket: Updating camera ${event.cameraId} with new image');
+
+    // Find and update the camera in our list
+    final cameraIndex = state.cameras.indexWhere(
+      (c) => c.cameraId == event.cameraId,
+    );
+
+    if (cameraIndex == -1) {
+      debugPrint('WebSocket: Camera ${event.cameraId} not found in list');
+      return;
+    }
+
+    final camera = state.cameras[cameraIndex];
+    final updatedCamera = camera.copyWith(
+      currentImageUrl: event.imageUrl,
+      currentImageUpdatedAt: DateTime.tryParse(event.updatedAt),
+    );
+
+    updateCamera(updatedCamera);
+  }
+
+  void _startPolling() {
+    // Use longer interval when WebSocket is enabled
+    final interval = Duration(
+      seconds: EnvConfig.webSocketEnabled
+          ? EnvConfig.pollingInterval *
+                2 // Double interval with WebSocket
+          : EnvConfig.pollingInterval,
+    );
+
     _pollingTimer = Timer.periodic(interval, (_) {
       loadCameras(silent: true);
     });
@@ -142,6 +197,14 @@ class CamerasNotifier extends Notifier<CamerasState> {
   void resumePolling() {
     if (_pollingTimer == null) {
       _startPolling();
+    }
+
+    // Ensure WebSocket is connected
+    if (EnvConfig.webSocketEnabled) {
+      final webSocketService = ref.read(webSocketServiceProvider);
+      if (!webSocketService.isConnected) {
+        webSocketService.connect();
+      }
     }
   }
 }

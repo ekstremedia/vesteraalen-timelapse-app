@@ -115,10 +115,14 @@ class CameraCard extends StatelessWidget {
         CachedNetworkImage(
           imageUrl: camera.currentImageUrl!,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: const Center(child: CircularProgressIndicator()),
-          ),
+          // Empty placeholder - no loading spinner, just shows background briefly
+          placeholder: (context, url) =>
+              Container(color: theme.colorScheme.surfaceContainerHighest),
+          // Instant transition - no fade animation for seamless updates
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
+          // Use memory cache to improve performance
+          memCacheWidth: 800,
           errorWidget: (context, url, error) => Container(
             color: theme.colorScheme.surfaceContainerHighest,
             child: Center(
