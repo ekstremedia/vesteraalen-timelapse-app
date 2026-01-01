@@ -2,7 +2,7 @@
 /// Maps to the PiTimelapseVideo model in the Laravel backend.
 class TimelapseVideo {
   final int id;
-  final String cameraId;
+  final String? cameraId;
   final DateTime date;
   final String? title;
   final String? youtubeId;
@@ -14,7 +14,7 @@ class TimelapseVideo {
 
   const TimelapseVideo({
     required this.id,
-    required this.cameraId,
+    this.cameraId,
     required this.date,
     this.title,
     this.youtubeId,
@@ -29,7 +29,7 @@ class TimelapseVideo {
   factory TimelapseVideo.fromJson(Map<String, dynamic> json) {
     return TimelapseVideo(
       id: json['id'] as int,
-      cameraId: json['camera_id'] as String,
+      cameraId: json['camera_id'] as String?,
       date: DateTime.parse(json['date'] as String),
       title: json['title'] as String?,
       youtubeId: json['youtube_id'] as String?,

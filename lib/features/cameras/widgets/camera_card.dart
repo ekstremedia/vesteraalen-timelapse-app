@@ -27,17 +27,17 @@ class CameraCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Camera image
-            AspectRatio(
-              aspectRatio: 16 / 9,
+            // Camera image - use Expanded to take available space
+            Expanded(
               child: _buildImage(context),
             ),
 
-            // Camera info
+            // Camera info - fixed height
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Camera name
                   Text(
@@ -51,44 +51,25 @@ class CameraCard extends StatelessWidget {
 
                   const SizedBox(height: 4),
 
-                  // Location
-                  if (camera.location != null) ...[
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 14,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            camera.location!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-
-                  // Video count
+                  // Location or video count (show one to save space)
                   Row(
                     children: [
                       Icon(
-                        Icons.video_library_outlined,
+                        camera.location != null
+                            ? Icons.location_on_outlined
+                            : Icons.video_library_outlined,
                         size: 14,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        l10n.videoCount(camera.videoCount),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                      Expanded(
+                        child: Text(
+                          camera.location ?? l10n.videoCount(camera.videoCount),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

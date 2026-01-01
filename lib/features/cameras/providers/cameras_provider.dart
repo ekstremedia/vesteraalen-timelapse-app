@@ -75,8 +75,8 @@ class CamerasNotifier extends Notifier<CamerasState> {
       _pollingTimer?.cancel();
     });
 
-    // Start loading cameras
-    _startPolling();
+    // Defer polling until after build() completes and state is initialized
+    Future.microtask(() => _startPolling());
 
     return const CamerasState(isLoading: true);
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/pages/camera_detail_page.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/cameras_provider.dart';
+import 'package:vesteraalen_timelapse/features/cameras/providers/date_picker_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/selected_camera_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/widgets/camera_card.dart';
 import 'package:vesteraalen_timelapse/features/settings/pages/settings_page.dart';
@@ -120,7 +122,7 @@ class CamerasListPage extends ConsumerWidget {
                 final camera = state.cameras[index];
                 return CameraCard(
                   camera: camera,
-                  onTap: () => _openCameraDetail(context, ref, camera.cameraId),
+                  onTap: () => _openCameraDetail(context, ref, camera),
                 );
               },
               childCount: state.cameras.length,
@@ -154,8 +156,19 @@ class CamerasListPage extends ConsumerWidget {
     }
   }
 
-  void _openCameraDetail(BuildContext context, WidgetRef ref, String cameraId) {
-    ref.read(selectedCameraIdProvider.notifier).state = cameraId;
+  void _openCameraDetail(BuildContext context, WidgetRef ref, Camera camera) {
+    // Set the selected camera
+    ref.read(selectedCameraIdProvider.notifier).state = camera.cameraId;
+
+    // Set the date to the camera's latest video date, or fall back to yesterday
+    final latestVideoDate = camera.latestVideo?.date;
+    if (latestVideoDate != null) {
+      ref.read(selectedDateProvider.notifier).state = latestVideoDate;
+    } else {
+      final now = DateTime.now();
+      ref.read(selectedDateProvider.notifier).state = DateTime(now.year, now.month, now.day - 1);
+    }
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const CameraDetailPage(),

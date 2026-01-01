@@ -32,8 +32,8 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.3.3
 
-  # YouTube Player
-  youtube_player_flutter: ^9.1.1
+  # YouTube Player (cross-platform)
+  youtube_player_iframe: ^5.2.0
 
   # Date/Time Formatting
   intl: ^0.20.1

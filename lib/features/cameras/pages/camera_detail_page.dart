@@ -1,7 +1,11 @@
+import 'dart:io' show Platform;
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/selected_camera_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/timelapse_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/widgets/date_navigation.dart';
@@ -98,7 +102,7 @@ class CameraDetailPage extends ConsumerWidget {
 
         // Video section
         if (video != null && video.hasYouTube) ...[
-          _buildYouTubeCard(context, video.youtubeId!, l10n),
+          _buildYouTubePlayer(context, video.youtubeId!, l10n),
         ],
 
         // Current image for today
@@ -185,7 +189,69 @@ class CameraDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildYouTubeCard(
+  /// Check if embedded YouTube player is supported on this platform.
+  bool get _supportsEmbeddedPlayer {
+    if (kIsWeb) return true;
+    if (Platform.isAndroid || Platform.isIOS) return true;
+    return false; // Linux, Windows, macOS don't support WebView well
+  }
+
+  Widget _buildYouTubePlayer(
+    BuildContext context,
+    String youtubeId,
+    AppLocalizations l10n,
+  ) {
+    // Use external link on unsupported platforms (Linux, Windows, macOS)
+    if (!_supportsEmbeddedPlayer) {
+      return _buildYouTubeThumbnail(context, youtubeId, l10n);
+    }
+
+    final controller = YoutubePlayerController.fromVideoId(
+      videoId: youtubeId,
+      autoPlay: false,
+      params: const YoutubePlayerParams(
+        showFullscreenButton: true,
+        mute: false,
+        showControls: true,
+        enableCaption: false,
+        playsInline: true,
+        strictRelatedVideos: true,
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: YoutubePlayer(
+                controller: controller,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  const Icon(Icons.play_circle_outline, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.timelapse,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildYouTubeThumbnail(
     BuildContext context,
     String youtubeId,
     AppLocalizations l10n,
@@ -218,7 +284,7 @@ class CameraDetailPage extends ConsumerWidget {
                   ),
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.black54,
                       shape: BoxShape.circle,
                     ),
@@ -248,6 +314,13 @@ class CameraDetailPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openYouTube(String youtubeId) async {
+    final url = Uri.parse('https://www.youtube.com/watch?v=$youtubeId');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _buildImageGrid(
@@ -310,13 +383,6 @@ class CameraDetailPage extends ConsumerWidget {
         );
       },
     );
-  }
-
-  Future<void> _openYouTube(String youtubeId) async {
-    final url = Uri.parse('https://www.youtube.com/watch?v=$youtubeId');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    }
   }
 
   void _showImageFullscreen(BuildContext context, String url, String title) {
