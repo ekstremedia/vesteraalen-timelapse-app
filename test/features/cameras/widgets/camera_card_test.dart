@@ -107,7 +107,7 @@ void main() {
       expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
     });
 
-    testWidgets('calls onTap when tapped', (tester) async {
+    testWidgets('calls onTimelapsePressed when button tapped', (tester) async {
       bool tapped = false;
       final camera = Camera(
         id: 1,
@@ -118,13 +118,39 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          CameraCard(camera: camera, onTap: () => tapped = true),
+          SizedBox(
+            height: 400,
+            width: 300,
+            child: CameraCard(
+              camera: camera,
+              onTimelapsePressed: () => tapped = true,
+            ),
+          ),
         ),
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(InkWell));
+      await tester.tap(find.text('See timelapse'));
       expect(tapped, isTrue);
+    });
+
+    testWidgets('displays See timelapse button', (tester) async {
+      final camera = Camera(
+        id: 1,
+        cameraId: 'test_camera',
+        name: 'Test Camera',
+        videoCount: 0,
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          SizedBox(height: 400, width: 300, child: CameraCard(camera: camera)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('See timelapse'), findsOneWidget);
+      expect(find.byIcon(Icons.play_circle_outline), findsOneWidget);
     });
 
     testWidgets('is a Card widget', (tester) async {

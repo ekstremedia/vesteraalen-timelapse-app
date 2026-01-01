@@ -44,6 +44,7 @@ class AppLocalizations {
 
       // Timelapse
       'timelapse': 'Timelapse',
+      'seeTimelapse': 'See timelapse',
       'noTimelapseAvailable': 'No timelapse available for this date',
       'showingYesterdaysTimelapse':
           "Today's timelapse is still being created. Showing yesterday's timelapse.",
@@ -110,6 +111,7 @@ class AppLocalizations {
 
       // Timelapse
       'timelapse': 'Timelapse',
+      'seeTimelapse': 'Se timelapse',
       'noTimelapseAvailable': 'Ingen timelapse tilgjengelig for denne datoen',
       'showingYesterdaysTimelapse':
           'Dagens timelapse lages fortsatt. Viser gårsdagens timelapse.',
@@ -176,6 +178,7 @@ class AppLocalizations {
 
       // Timelapse
       'timelapse': 'Timelapse',
+      'seeTimelapse': 'Sjå timelapse',
       'noTimelapseAvailable': 'Ingen timelapse tilgjengeleg for denne datoen',
       'showingYesterdaysTimelapse':
           'Dagens timelapse vert laga. Viser gårsdagens timelapse.',
@@ -253,6 +256,7 @@ class AppLocalizations {
 
   // Timelapse
   String get timelapse => _get('timelapse');
+  String get seeTimelapse => _get('seeTimelapse');
   String get noTimelapseAvailable => _get('noTimelapseAvailable');
   String get showingYesterdaysTimelapse => _get('showingYesterdaysTimelapse');
   String get dailyImages => _get('dailyImages');

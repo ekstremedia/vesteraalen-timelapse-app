@@ -122,7 +122,8 @@ class CamerasListPage extends ConsumerWidget {
               final camera = state.cameras[index];
               return CameraCard(
                 camera: camera,
-                onTap: () => _openCameraDetail(context, ref, camera),
+                onTimelapsePressed: () =>
+                    _openCameraDetail(context, ref, camera),
               );
             }, childCount: state.cameras.length),
           ),
@@ -142,15 +143,16 @@ class CamerasListPage extends ConsumerWidget {
   /// Calculate aspect ratio based on number of columns.
   double _calculateChildAspectRatio(int crossAxisCount) {
     // More columns = wider cards, adjust ratio
+    // Reduced ratios to accommodate the timelapse button
     switch (crossAxisCount) {
       case 1:
-        return 1.3; // Taller on phone
+        return 1.1; // Taller on phone
       case 2:
-        return 1.1;
+        return 0.9;
       case 3:
-        return 1.0;
+        return 0.85;
       default:
-        return 0.9; // More square on large screens
+        return 0.75; // More square on large screens
     }
   }
 
