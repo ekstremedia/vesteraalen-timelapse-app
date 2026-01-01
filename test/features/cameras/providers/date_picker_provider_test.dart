@@ -16,7 +16,11 @@ void main() {
 
     test('isYesterday returns true for yesterday', () {
       final yesterday = DateTime.now().subtract(const Duration(days: 1));
-      final yesterdayDate = DateTime(yesterday.year, yesterday.month, yesterday.day);
+      final yesterdayDate = DateTime(
+        yesterday.year,
+        yesterday.month,
+        yesterday.day,
+      );
       expect(yesterdayDate.isYesterday, isTrue);
     });
 

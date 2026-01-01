@@ -16,9 +16,7 @@ class SettingsPage extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settings),
-      ),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
         children: [
           // Appearance Section
@@ -45,9 +43,9 @@ class SettingsPage extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -63,8 +61,8 @@ class SettingsPage extends ConsumerWidget {
         themeMode == ThemeMode.dark
             ? Icons.dark_mode
             : themeMode == ThemeMode.light
-                ? Icons.light_mode
-                : Icons.brightness_auto,
+            ? Icons.light_mode
+            : Icons.brightness_auto,
       ),
       title: Text(l10n.theme),
       subtitle: Text(_getThemeLabel(l10n, themeMode)),
@@ -182,13 +180,15 @@ class SettingsPage extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: AppLocalizations.supportedLocales.map((locale) {
-            final isSelected = locale.languageCode == currentLocale.languageCode;
+            final isSelected =
+                locale.languageCode == currentLocale.languageCode;
             return ListTile(
               title: Text(
                 localeNotifier.getLocaleName(locale, l10n),
                 style: TextStyle(
-                  color:
-                      isSelected ? Theme.of(context).colorScheme.primary : null,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                   fontWeight: isSelected ? FontWeight.w600 : null,
                 ),
               ),

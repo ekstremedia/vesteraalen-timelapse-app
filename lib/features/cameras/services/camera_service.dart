@@ -68,7 +68,9 @@ class CameraService {
     }
 
     try {
-      final response = await _apiClient.get('/api/app/timelapse/$cameraId/$dateStr');
+      final response = await _apiClient.get(
+        '/api/app/timelapse/$cameraId/$dateStr',
+      );
       final data = response.data as Map<String, dynamic>;
 
       _cacheService.set(cacheKey, data, cacheDuration);
@@ -96,7 +98,9 @@ class CameraService {
     }
 
     try {
-      final response = await _apiClient.get('/api/app/timelapse/$cameraId/dates');
+      final response = await _apiClient.get(
+        '/api/app/timelapse/$cameraId/dates',
+      );
       final List<dynamic> dates = response.data['dates'] as List<dynamic>;
 
       _cacheService.set(cacheKey, dates, cacheDuration);

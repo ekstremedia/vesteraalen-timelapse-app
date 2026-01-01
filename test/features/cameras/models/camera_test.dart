@@ -102,10 +102,7 @@ void main() {
         videoCount: 5,
       );
 
-      final updated = camera.copyWith(
-        name: 'Updated Name',
-        videoCount: 10,
-      );
+      final updated = camera.copyWith(name: 'Updated Name', videoCount: 10);
 
       expect(updated.id, 1);
       expect(updated.cameraId, 'test_camera');

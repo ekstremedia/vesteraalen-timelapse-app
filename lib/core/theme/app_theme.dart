@@ -40,10 +40,7 @@ class AppTheme {
       scaffoldBackgroundColor: surfaceDark,
       textTheme: GoogleFonts.interTextTheme(
         ThemeData.dark().textTheme,
-      ).apply(
-        bodyColor: onSurfaceDark,
-        displayColor: onSurfaceDark,
-      ),
+      ).apply(bodyColor: onSurfaceDark, displayColor: onSurfaceDark),
       appBarTheme: const AppBarTheme(
         backgroundColor: surfaceDark,
         elevation: 0,
@@ -55,45 +52,31 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.black,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: onSurfaceDark,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: BorderSide(color: primaryColor.withOpacity(0.4)),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          foregroundColor: onSurfaceDark,
-        ),
+        style: IconButton.styleFrom(foregroundColor: onSurfaceDark),
       ),
       cardTheme: CardThemeData(
         color: surfaceContainerDark,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity( 0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shadowColor: Colors.black.withOpacity(0.3),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(
-        color: onSurfaceVariantDark.withOpacity( 0.2),
+        color: onSurfaceVariantDark.withOpacity(0.2),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surfaceContainerDark,
@@ -104,7 +87,7 @@ class AppTheme {
             return Colors.black;
           }
           if (states.contains(WidgetState.disabled)) {
-            return onSurfaceVariantDark.withOpacity( 0.4);
+            return onSurfaceVariantDark.withOpacity(0.4);
           }
           return onSurfaceDark;
         }),
@@ -140,10 +123,7 @@ class AppTheme {
       scaffoldBackgroundColor: surfaceLight,
       textTheme: GoogleFonts.interTextTheme(
         ThemeData.light().textTheme,
-      ).apply(
-        bodyColor: onSurfaceLight,
-        displayColor: onSurfaceLight,
-      ),
+      ).apply(bodyColor: onSurfaceLight, displayColor: onSurfaceLight),
       appBarTheme: const AppBarTheme(
         backgroundColor: surfaceContainerLight,
         elevation: 0,
@@ -155,45 +135,31 @@ class AppTheme {
           backgroundColor: primaryDark,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: onSurfaceLight,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          side: BorderSide(color: primaryDark.withOpacity( 0.3)),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          side: BorderSide(color: primaryDark.withOpacity(0.3)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          foregroundColor: onSurfaceLight,
-        ),
+        style: IconButton.styleFrom(foregroundColor: onSurfaceLight),
       ),
       cardTheme: CardThemeData(
         color: surfaceContainerLight,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity( 0.08),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shadowColor: Colors.black.withOpacity(0.08),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(
-        color: onSurfaceVariantLight.withOpacity( 0.2),
+        color: onSurfaceVariantLight.withOpacity(0.2),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surfaceContainerLight,
@@ -204,7 +170,7 @@ class AppTheme {
             return Colors.white;
           }
           if (states.contains(WidgetState.disabled)) {
-            return onSurfaceVariantLight.withOpacity( 0.4);
+            return onSurfaceVariantLight.withOpacity(0.4);
           }
           return onSurfaceLight;
         }),

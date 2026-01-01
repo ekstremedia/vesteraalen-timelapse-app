@@ -48,14 +48,14 @@ class DateNavigationBar extends ConsumerWidget {
                     Text(
                       _formatDateLabel(context, selectedDate),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       _formatFullDate(context, selectedDate),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -76,9 +76,7 @@ class DateNavigationBar extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.today),
             tooltip: l10n.goToToday,
-            onPressed: selectedDate.isToday
-                ? null
-                : () => _goToToday(ref),
+            onPressed: selectedDate.isToday ? null : () => _goToToday(ref),
           ),
         ],
       ),
@@ -98,8 +96,7 @@ class DateNavigationBar extends ConsumerWidget {
       return DateFormat('EEEE', locale).format(date);
     }
 
-    return DateFormat.MMMd(LocaleUtils.getIntlLocale(context))
-        .format(date);
+    return DateFormat.MMMd(LocaleUtils.getIntlLocale(context)).format(date);
   }
 
   String _formatFullDate(BuildContext context, DateTime date) {
@@ -144,10 +141,12 @@ class DateNavigationBar extends ConsumerWidget {
             // Allow today even if not in available dates
             if (date.isToday) return true;
 
-            return dates.any((d) =>
-                d.year == date.year &&
-                d.month == date.month &&
-                d.day == date.day);
+            return dates.any(
+              (d) =>
+                  d.year == date.year &&
+                  d.month == date.month &&
+                  d.day == date.day,
+            );
           },
           orElse: () => true,
         );

@@ -38,7 +38,9 @@ class Camera {
           ? DateTime.parse(json['current_image_updated_at'] as String)
           : null,
       latestVideo: json['latest_video'] != null
-          ? TimelapseVideo.fromJson(json['latest_video'] as Map<String, dynamic>)
+          ? TimelapseVideo.fromJson(
+              json['latest_video'] as Map<String, dynamic>,
+            )
           : null,
       videoCount: json['video_count'] as int? ?? 0,
     );
@@ -46,16 +48,16 @@ class Camera {
 
   /// Convert Camera to JSON.
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'camera_id': cameraId,
-        'name': name,
-        'description': description,
-        'location': location,
-        'current_image_url': currentImageUrl,
-        'current_image_updated_at': currentImageUpdatedAt?.toIso8601String(),
-        'latest_video': latestVideo?.toJson(),
-        'video_count': videoCount,
-      };
+    'id': id,
+    'camera_id': cameraId,
+    'name': name,
+    'description': description,
+    'location': location,
+    'current_image_url': currentImageUrl,
+    'current_image_updated_at': currentImageUpdatedAt?.toIso8601String(),
+    'latest_video': latestVideo?.toJson(),
+    'video_count': videoCount,
+  };
 
   /// Create a copy with updated fields.
   Camera copyWith({
@@ -76,14 +78,16 @@ class Camera {
       description: description ?? this.description,
       location: location ?? this.location,
       currentImageUrl: currentImageUrl ?? this.currentImageUrl,
-      currentImageUpdatedAt: currentImageUpdatedAt ?? this.currentImageUpdatedAt,
+      currentImageUpdatedAt:
+          currentImageUpdatedAt ?? this.currentImageUpdatedAt,
       latestVideo: latestVideo ?? this.latestVideo,
       videoCount: videoCount ?? this.videoCount,
     );
   }
 
   /// Check if camera has a current image.
-  bool get hasCurrentImage => currentImageUrl != null && currentImageUrl!.isNotEmpty;
+  bool get hasCurrentImage =>
+      currentImageUrl != null && currentImageUrl!.isNotEmpty;
 
   /// Check if camera has any timelapse videos.
   bool get hasVideos => videoCount > 0;

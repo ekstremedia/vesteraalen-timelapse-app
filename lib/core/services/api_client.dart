@@ -6,30 +6,34 @@ class ApiClient {
   late final Dio _dio;
 
   ApiClient() {
-    _dio = Dio(BaseOptions(
-      baseUrl: EnvConfig.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    ));
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: EnvConfig.apiBaseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
 
     // Add logging interceptor for debug builds
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: false,
-      responseBody: false,
-      error: true,
-      logPrint: (object) {
-        // Only log in debug mode
-        assert(() {
-          // ignore: avoid_print
-          print(object);
-          return true;
-        }());
-      },
-    ));
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: false,
+        responseBody: false,
+        error: true,
+        logPrint: (object) {
+          // Only log in debug mode
+          assert(() {
+            // ignore: avoid_print
+            print(object);
+            return true;
+          }());
+        },
+      ),
+    );
   }
 
   /// GET request
@@ -100,11 +104,7 @@ class ApiException implements Exception {
   final int? statusCode;
   final dynamic data;
 
-  ApiException({
-    required this.message,
-    this.statusCode,
-    this.data,
-  });
+  ApiException({required this.message, this.statusCode, this.data});
 
   factory ApiException.fromDioException(DioException e) {
     String message;
@@ -121,7 +121,8 @@ class ApiException implements Exception {
         break;
       case DioExceptionType.badResponse:
         statusCode = e.response?.statusCode;
-        message = _extractErrorMessage(e.response) ??
+        message =
+            _extractErrorMessage(e.response) ??
             'Server error (${e.response?.statusCode})';
         break;
       case DioExceptionType.cancel:

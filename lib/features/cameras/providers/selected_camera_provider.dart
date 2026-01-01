@@ -12,7 +12,5 @@ final selectedCameraProvider = Provider<Camera?>((ref) {
   if (cameraId == null) return null;
 
   final camerasState = ref.watch(camerasProvider);
-  return camerasState.cameras
-      .where((c) => c.cameraId == cameraId)
-      .firstOrNull;
+  return camerasState.cameras.where((c) => c.cameraId == cameraId).firstOrNull;
 });

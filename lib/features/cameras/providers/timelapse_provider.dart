@@ -11,11 +11,7 @@ class TimelapseState {
   final bool isLoading;
   final String? error;
 
-  const TimelapseState({
-    this.detail,
-    this.isLoading = false,
-    this.error,
-  });
+  const TimelapseState({this.detail, this.isLoading = false, this.error});
 
   TimelapseState copyWith({
     TimelapseDetail? detail,
@@ -58,22 +54,24 @@ class TimelapseNotifier extends Notifier<TimelapseState> {
   }
 
   /// Load timelapse for the specified camera and date.
-  Future<void> loadTimelapse(String cameraId, DateTime date, {bool forceRefresh = false}) async {
+  Future<void> loadTimelapse(
+    String cameraId,
+    DateTime date, {
+    bool forceRefresh = false,
+  }) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final service = ref.read(cameraServiceProvider);
-      final detail = await service.getTimelapse(cameraId, date, forceRefresh: forceRefresh);
+      final detail = await service.getTimelapse(
+        cameraId,
+        date,
+        forceRefresh: forceRefresh,
+      );
 
-      state = state.copyWith(
-        detail: detail,
-        isLoading: false,
-      );
+      state = state.copyWith(detail: detail, isLoading: false);
     } on ApiException catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message,
-      );
+      state = state.copyWith(isLoading: false, error: e.message);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -112,10 +110,12 @@ final hasTimelapseProvider = Provider.family<bool, DateTime>((ref, date) {
   return availableDates.maybeWhen(
     data: (dates) {
       final dateOnly = DateTime(date.year, date.month, date.day);
-      return dates.any((d) =>
-          d.year == dateOnly.year &&
-          d.month == dateOnly.month &&
-          d.day == dateOnly.day);
+      return dates.any(
+        (d) =>
+            d.year == dateOnly.year &&
+            d.month == dateOnly.month &&
+            d.day == dateOnly.day,
+      );
     },
     orElse: () => false,
   );

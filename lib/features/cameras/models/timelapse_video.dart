@@ -43,17 +43,17 @@ class TimelapseVideo {
 
   /// Convert TimelapseVideo to JSON.
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'camera_id': cameraId,
-        'date': date.toIso8601String().split('T').first,
-        'title': title,
-        'youtube_id': youtubeId,
-        'video_url': videoUrl,
-        'thumbnail_url': thumbnailUrl,
-        'daytime_url': daytimeUrl,
-        'night_url': nightUrl,
-        'keogram_url': keogramUrl,
-      };
+    'id': id,
+    'camera_id': cameraId,
+    'date': date.toIso8601String().split('T').first,
+    'title': title,
+    'youtube_id': youtubeId,
+    'video_url': videoUrl,
+    'thumbnail_url': thumbnailUrl,
+    'daytime_url': daytimeUrl,
+    'night_url': nightUrl,
+    'keogram_url': keogramUrl,
+  };
 
   /// Create a copy with updated fields.
   TimelapseVideo copyWith({
@@ -149,8 +149,9 @@ class TimelapseDetail {
       video: json['video'] != null
           ? TimelapseVideo.fromJson(json['video'] as Map<String, dynamic>)
           : null,
-      navigation:
-          TimelapseNavigation.fromJson(json['navigation'] as Map<String, dynamic>),
+      navigation: TimelapseNavigation.fromJson(
+        json['navigation'] as Map<String, dynamic>,
+      ),
     );
   }
 }
@@ -184,10 +185,7 @@ class CurrentImage {
   final String url;
   final DateTime updatedAt;
 
-  const CurrentImage({
-    required this.url,
-    required this.updatedAt,
-  });
+  const CurrentImage({required this.url, required this.updatedAt});
 
   factory CurrentImage.fromJson(Map<String, dynamic> json) {
     return CurrentImage(

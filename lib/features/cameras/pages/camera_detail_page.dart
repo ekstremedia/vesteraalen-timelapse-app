@@ -24,16 +24,12 @@ class CameraDetailPage extends ConsumerWidget {
     if (camera == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: Text(l10n.cameraNotFound),
-        ),
+        body: Center(child: Text(l10n.cameraNotFound)),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(camera.name),
-      ),
+      appBar: AppBar(title: Text(camera.name)),
       body: RefreshIndicator(
         onRefresh: () => ref.read(timelapseProvider.notifier).refresh(),
         child: CustomScrollView(
@@ -86,9 +82,7 @@ class CameraDetailPage extends ConsumerWidget {
 
     if (!state.hasData) {
       return SliverFillRemaining(
-        child: Center(
-          child: Text(l10n.noTimelapseAvailable),
-        ),
+        child: Center(child: Text(l10n.noTimelapseAvailable)),
       );
     }
 
@@ -138,8 +132,8 @@ class CameraDetailPage extends ConsumerWidget {
                     child: Text(
                       l10n.formatRelativeTime(updatedAt),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
               ],
@@ -228,9 +222,7 @@ class CameraDetailPage extends ConsumerWidget {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: YoutubePlayer(
-                controller: controller,
-              ),
+              child: YoutubePlayer(controller: controller),
             ),
             Padding(
               padding: const EdgeInsets.all(12),
@@ -256,7 +248,8 @@ class CameraDetailPage extends ConsumerWidget {
     String youtubeId,
     AppLocalizations l10n,
   ) {
-    final thumbnailUrl = 'https://img.youtube.com/vi/$youtubeId/maxresdefault.jpg';
+    final thumbnailUrl =
+        'https://img.youtube.com/vi/$youtubeId/maxresdefault.jpg';
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -359,26 +352,22 @@ class CameraDetailPage extends ConsumerWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: InkWell(
-                  onTap: () => _showImageFullscreen(context, entry.value, entry.key),
+                  onTap: () =>
+                      _showImageFullscreen(context, entry.value, entry.key),
                   child: CachedNetworkImage(
                     imageUrl: entry.value,
                     fit: BoxFit.cover,
                     width: double.infinity,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    errorWidget: (context, url, error) => const Center(
-                      child: Icon(Icons.broken_image),
-                    ),
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.broken_image)),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              entry.key,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(entry.key, style: Theme.of(context).textTheme.bodySmall),
           ],
         );
       },
@@ -400,11 +389,10 @@ class CameraDetailPage extends ConsumerWidget {
               child: CachedNetworkImage(
                 imageUrl: url,
                 fit: BoxFit.contain,
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(
-                  Icons.broken_image,
-                  color: Colors.white,
-                ),
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image, color: Colors.white),
               ),
             ),
           ),

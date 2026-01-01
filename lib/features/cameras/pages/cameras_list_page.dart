@@ -95,7 +95,10 @@ class CamerasListPage extends ConsumerWidget {
   }
 
   Widget _buildCameraGrid(
-      BuildContext context, CamerasState state, WidgetRef ref) {
+    BuildContext context,
+    CamerasState state,
+    WidgetRef ref,
+  ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = _calculateCrossAxisCount(screenWidth);
 
@@ -103,9 +106,7 @@ class CamerasListPage extends ConsumerWidget {
       slivers: [
         // Show subtle loading indicator when refreshing in background
         if (state.isLoading)
-          const SliverToBoxAdapter(
-            child: LinearProgressIndicator(),
-          ),
+          const SliverToBoxAdapter(child: LinearProgressIndicator()),
 
         // Camera grid
         SliverPadding(
@@ -117,16 +118,13 @@ class CamerasListPage extends ConsumerWidget {
               crossAxisSpacing: 16,
               childAspectRatio: _calculateChildAspectRatio(crossAxisCount),
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final camera = state.cameras[index];
-                return CameraCard(
-                  camera: camera,
-                  onTap: () => _openCameraDetail(context, ref, camera),
-                );
-              },
-              childCount: state.cameras.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final camera = state.cameras[index];
+              return CameraCard(
+                camera: camera,
+                onTap: () => _openCameraDetail(context, ref, camera),
+              );
+            }, childCount: state.cameras.length),
           ),
         ),
       ],
@@ -166,21 +164,21 @@ class CamerasListPage extends ConsumerWidget {
       ref.read(selectedDateProvider.notifier).state = latestVideoDate;
     } else {
       final now = DateTime.now();
-      ref.read(selectedDateProvider.notifier).state = DateTime(now.year, now.month, now.day - 1);
+      ref.read(selectedDateProvider.notifier).state = DateTime(
+        now.year,
+        now.month,
+        now.day - 1,
+      );
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CameraDetailPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const CameraDetailPage()));
   }
 
   void _openSettings(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const SettingsPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const SettingsPage()));
   }
 }

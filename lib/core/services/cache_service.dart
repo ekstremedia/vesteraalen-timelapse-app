@@ -17,10 +17,7 @@ class CacheService {
 
   /// Set a value in the cache with a TTL.
   void set<T>(String key, T data, Duration ttl) {
-    _cache[key] = _CacheEntry(
-      data: data,
-      expiresAt: DateTime.now().add(ttl),
-    );
+    _cache[key] = _CacheEntry(data: data, expiresAt: DateTime.now().add(ttl));
   }
 
   /// Check if a key exists and is not expired.
@@ -62,10 +59,7 @@ class _CacheEntry {
   final dynamic data;
   final DateTime expiresAt;
 
-  _CacheEntry({
-    required this.data,
-    required this.expiresAt,
-  });
+  _CacheEntry({required this.data, required this.expiresAt});
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
 }

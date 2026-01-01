@@ -237,7 +237,8 @@ class AppLocalizations {
   // Cameras
   String get cameraNotFound => _get('cameraNotFound');
   String get currentImage => _get('currentImage');
-  String updatedAgo(String time) => _get('updatedAgo').replaceAll('{time}', time);
+  String updatedAgo(String time) =>
+      _get('updatedAgo').replaceAll('{time}', time);
   String get justNow => _get('justNow');
   String minutesAgo(int count) =>
       _get('minutesAgo').replaceAll('{count}', count.toString());
@@ -319,7 +320,8 @@ class _AppLocalizationsDelegate
       ['en', 'nb', 'nn'].contains(locale.languageCode);
 
   @override
-  Future<AppLocalizations> load(Locale locale) async => AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) async =>
+      AppLocalizations(locale);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -347,8 +349,7 @@ class NorwegianMaterialLocalizationsDelegate
   const NorwegianMaterialLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['nb', 'nn'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => ['nb', 'nn'].contains(locale.languageCode);
 
   @override
   Future<MaterialLocalizations> load(Locale locale) async =>

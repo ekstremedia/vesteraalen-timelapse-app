@@ -93,7 +93,10 @@ class CamerasNotifier extends Notifier<CamerasState> {
   }
 
   /// Load cameras from the API.
-  Future<void> loadCameras({bool silent = false, bool forceRefresh = false}) async {
+  Future<void> loadCameras({
+    bool silent = false,
+    bool forceRefresh = false,
+  }) async {
     if (!silent) {
       state = state.copyWith(isLoading: true, error: null);
     }
@@ -108,15 +111,9 @@ class CamerasNotifier extends Notifier<CamerasState> {
         lastUpdated: DateTime.now(),
       );
     } on ApiException catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message,
-      );
+      state = state.copyWith(isLoading: false, error: e.message);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to load cameras',
-      );
+      state = state.copyWith(isLoading: false, error: 'Failed to load cameras');
     }
   }
 
@@ -132,10 +129,7 @@ class CamerasNotifier extends Notifier<CamerasState> {
       return c;
     }).toList();
 
-    state = state.copyWith(
-      cameras: cameras,
-      lastUpdated: DateTime.now(),
-    );
+    state = state.copyWith(cameras: cameras, lastUpdated: DateTime.now());
   }
 
   /// Stop polling (call when app goes to background).

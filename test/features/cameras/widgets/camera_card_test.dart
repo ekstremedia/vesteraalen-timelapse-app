@@ -8,9 +8,7 @@ void main() {
   Widget createTestWidget(Widget child) {
     return MaterialApp(
       locale: const Locale('en'),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-      ],
+      localizationsDelegates: const [AppLocalizations.delegate],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: child),
     );
@@ -25,9 +23,7 @@ void main() {
         videoCount: 10,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.text('Test Camera Name'), findsOneWidget);
@@ -42,9 +38,7 @@ void main() {
         videoCount: 5,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.text('Sortland, Vesterålen'), findsOneWidget);
@@ -59,9 +53,7 @@ void main() {
         videoCount: 42,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.text('42 videos'), findsOneWidget);
@@ -76,9 +68,7 @@ void main() {
         videoCount: 1,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.text('1 video'), findsOneWidget);
@@ -93,15 +83,15 @@ void main() {
         videoCount: 0,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget);
     });
 
-    testWidgets('does not show placeholder when image URL provided', (tester) async {
+    testWidgets('does not show placeholder when image URL provided', (
+      tester,
+    ) async {
       final camera = Camera(
         id: 1,
         cameraId: 'test_camera',
@@ -110,9 +100,7 @@ void main() {
         videoCount: 0,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pump();
 
       // Placeholder icon should not be present when image URL is provided
@@ -128,12 +116,11 @@ void main() {
         videoCount: 0,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(
-          camera: camera,
-          onTap: () => tapped = true,
+      await tester.pumpWidget(
+        createTestWidget(
+          CameraCard(camera: camera, onTap: () => tapped = true),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(InkWell));
@@ -148,9 +135,7 @@ void main() {
         videoCount: 0,
       );
 
-      await tester.pumpWidget(createTestWidget(
-        CameraCard(camera: camera),
-      ));
+      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
       await tester.pumpAndSettle();
 
       expect(find.byType(Card), findsOneWidget);

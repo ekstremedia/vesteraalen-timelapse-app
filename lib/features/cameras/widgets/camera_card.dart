@@ -8,11 +8,7 @@ class CameraCard extends StatelessWidget {
   final Camera camera;
   final VoidCallback? onTap;
 
-  const CameraCard({
-    super.key,
-    required this.camera,
-    this.onTap,
-  });
+  const CameraCard({super.key, required this.camera, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +24,7 @@ class CameraCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Camera image - use Expanded to take available space
-            Expanded(
-              child: _buildImage(context),
-            ),
+            Expanded(child: _buildImage(context)),
 
             // Camera info - fixed height
             Padding(
@@ -104,9 +98,7 @@ class CameraCard extends StatelessWidget {
       fit: BoxFit.cover,
       placeholder: (context, url) => Container(
         color: theme.colorScheme.surfaceContainerHighest,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       ),
       errorWidget: (context, url, error) => Container(
         color: theme.colorScheme.surfaceContainerHighest,

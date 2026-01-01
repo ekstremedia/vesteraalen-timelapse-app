@@ -252,11 +252,7 @@ void main() {
 
     test('fromJson handles current_image', () {
       final json = {
-        'camera': {
-          'id': 1,
-          'camera_id': 'test_camera',
-          'name': 'Test Camera',
-        },
+        'camera': {'id': 1, 'camera_id': 'test_camera', 'name': 'Test Camera'},
         'current_date': '2025-12-31',
         'is_today': true,
         'current_image': {

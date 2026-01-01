@@ -7,7 +7,9 @@ import 'package:vesteraalen_timelapse/core/providers/shared_preferences_provider
 import 'package:vesteraalen_timelapse/core/theme/app_theme.dart';
 
 void main() {
-  testWidgets('App smoke test - renders without errors', (WidgetTester tester) async {
+  testWidgets('App smoke test - renders without errors', (
+    WidgetTester tester,
+  ) async {
     // Set up SharedPreferences mock
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -15,17 +17,11 @@ void main() {
     // Build a minimal app for testing
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          home: const Scaffold(
-            body: Center(
-              child: Text('Test App'),
-            ),
-          ),
+          home: const Scaffold(body: Center(child: Text('Test App'))),
         ),
       ),
     );
