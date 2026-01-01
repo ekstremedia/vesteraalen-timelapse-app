@@ -22,7 +22,7 @@ class AppLocalizations {
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
       // App
-      'appTitle': 'Vesteraalen Timelapse',
+      'appTitle': 'Vesterålen Timelapse',
       'appSubtitle': 'Live cameras from Northern Norway',
 
       // Navigation
@@ -88,7 +88,7 @@ class AppLocalizations {
     },
     'nb': {
       // App
-      'appTitle': 'Vesteraalen Timelapse',
+      'appTitle': 'Vesterålen Timelapse',
       'appSubtitle': 'Direktekameraer fra Nord-Norge',
 
       // Navigation
@@ -154,7 +154,7 @@ class AppLocalizations {
     },
     'nn': {
       // App
-      'appTitle': 'Vesteraalen Timelapse',
+      'appTitle': 'Vesterålen Timelapse',
       'appSubtitle': 'Direktekamera frå Nord-Noreg',
 
       // Navigation

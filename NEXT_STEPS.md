@@ -1,4 +1,4 @@
-# Next Steps for Vesteraalen Timelapse App
+# Next Steps for Vesterålen Timelapse App
 
 ## Current Status (2025-12-31)
 
@@ -12,7 +12,7 @@
 ## Step 1: Set up Firebase Project
 
 1. Go to https://console.firebase.google.com
-2. Create new project called "Vesteraalen Timelapse"
+2. Create new project called "Vesterålen Timelapse"
 3. Add Android app:
    - Package name: `no.ekstremedia.vesteraalen_timelapse`
    - Download `google-services.json`
@@ -101,7 +101,7 @@ cd /www/vesteraalen_timelapse
 # Initialize git if not done
 git init
 git add .
-git commit -m "Initial commit: Vesteraalen Timelapse Flutter app"
+git commit -m "Initial commit: Vesterålen Flutter app"
 
 # Add remote (replace with your repo URL)
 git remote add origin git@github.com:YOUR_USERNAME/vesteraalen_timelapse.git

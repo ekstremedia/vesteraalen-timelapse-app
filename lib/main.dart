@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:vesteraalen_timelapse/core/config/env_config.dart';
 import 'package:vesteraalen_timelapse/core/theme/app_theme.dart';
@@ -13,6 +14,9 @@ import 'package:vesteraalen_timelapse/features/cameras/pages/cameras_list_page.d
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize date formatting for all supported locales
+  await initializeDateFormatting();
 
   // Load environment configuration
   await EnvConfig.load();
@@ -39,7 +43,7 @@ class VesteraalenTimelapseApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp(
-      title: 'Vesteraalen Timelapse',
+      title: 'Vesterålen',
       debugShowCheckedModeBanner: false,
 
       // Theme

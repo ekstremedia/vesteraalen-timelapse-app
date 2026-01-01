@@ -1,10 +1,10 @@
-# Vesteraalen Timelapse App - Claude Memory & Guidelines
+# Vesterålen Timelapse App - Claude Memory & Guidelines
 
 ## Project Overview
 
-**Vesteraalen Timelapse** is a Flutter mobile app displaying live camera images and timelapse videos from Northern Norway (ekstremedia.no).
+**Vesterålen Timelapse** is a Flutter mobile app displaying live camera images and timelapse videos from Northern Norway (ekstremedia.no).
 
-- **App Name:** Vesteraalen Timelapse
+- **App Name:** Vesterålen Timelapse
 - **Bundle ID:** no.ekstremedia.timelapse
 - **Backend:** Laravel 12 at `/www/nesthus_2026/`
 - **Distribution:** Firebase App Distribution + Google Play + App Store
@@ -23,7 +23,7 @@
 
 ### Daily Development Logs
 **IMPORTANT**: Create a new log file for every development day:
-- Location: `/www/vesteraalen_timelapse/logs/YYYY-MM-DD.md`
+- Location: `/www/Vesterålen_timelapse/logs/YYYY-MM-DD.md`
 - Content: Features implemented, bugs fixed, architecture decisions
 
 ### FLUTTER_APP_HOWTO.md Maintenance

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:vesteraalen_timelapse/core/providers/locale_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/date_picker_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/timelapse_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
@@ -93,16 +94,16 @@ class DateNavigationBar extends ConsumerWidget {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
     if (difference < 7) {
-      final locale = Localizations.localeOf(context).languageCode;
+      final locale = LocaleUtils.getIntlLocale(context);
       return DateFormat('EEEE', locale).format(date);
     }
 
-    return DateFormat.MMMd(Localizations.localeOf(context).languageCode)
+    return DateFormat.MMMd(LocaleUtils.getIntlLocale(context))
         .format(date);
   }
 
   String _formatFullDate(BuildContext context, DateTime date) {
-    final locale = Localizations.localeOf(context).languageCode;
+    final locale = LocaleUtils.getIntlLocale(context);
     return DateFormat.yMMMMd(locale).format(date);
   }
 

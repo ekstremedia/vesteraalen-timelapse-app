@@ -209,7 +209,7 @@ android/app/google-services.json
 
 1. In Firebase Console, click **"Add app"** → Android
 2. Enter package name: `no.ekstremedia.vesteraalen_timelapse`
-3. Enter app nickname: `Vesteraalen Timelapse Android`
+3. Enter app nickname: `Vesterålen Android`
 4. Get SHA-1 fingerprint:
    ```bash
    # Debug key
@@ -225,7 +225,7 @@ android/app/google-services.json
 
 1. In Firebase Console, click **"Add app"** → iOS
 2. Enter bundle ID: `no.ekstremedia.timelapse`
-3. Enter app nickname: `Vesteraalen Timelapse iOS`
+3. Enter app nickname: `Vesterålen iOS`
 4. Download `GoogleService-Info.plist`
 5. Place in `ios/Runner/GoogleService-Info.plist`
 6. Add to Xcode project (drag into Runner folder, check "Copy items")
@@ -313,7 +313,7 @@ android {
 Edit `android/app/src/main/AndroidManifest.xml`:
 ```xml
 <application
-    android:label="Vesteraalen Timelapse"
+    android:label="Vesterålen"
     ...>
 ```
 
@@ -336,7 +336,7 @@ In `android/app/src/main/AndroidManifest.xml`:
 Edit `ios/Runner/Info.plist`:
 ```xml
 <key>CFBundleDisplayName</key>
-<string>Vesteraalen Timelapse</string>
+<string>Vesterålen</string>
 ```
 
 ### Configure Bundle ID
@@ -554,7 +554,7 @@ Add these in **Settings** → **Secrets and variables** → **Actions**:
 
 1. **All apps** → **Create app**
 2. Fill in:
-   - App name: `Vesteraalen Timelapse`
+   - App name: `Vesterålen`
    - Default language: Norwegian (Bokmål)
    - App or game: App
    - Free or paid: Free
@@ -612,7 +612,7 @@ Complete these sections:
 2. **My Apps** → **+** → **New App**
 3. Fill in:
    - Platform: iOS
-   - Name: `Vesteraalen Timelapse`
+   - Name: `Vesterålen`
    - Primary language: Norwegian (Bokmål)
    - Bundle ID: Select from dropdown (must match Xcode)
    - SKU: `vesteraalen-timelapse`
