@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
@@ -39,7 +39,7 @@ dependencies:
   intl: ^0.20.1
 
   # Environment Config
-  flutter_dotenv: ^5.2.1
+  flutter_dotenv: ^6.0.0
 
   # URL Launcher (for external links)
   url_launcher: ^6.3.1
@@ -51,7 +51,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Mocking for tests
   mocktail: ^1.0.4
