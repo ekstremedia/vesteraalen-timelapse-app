@@ -1,12 +1,9 @@
 name: iOS Deploy
 
-# Disabled until iOS signing is configured
-# Uncomment the push trigger when ready:
-# on:
-#   push:
-#     tags:
-#       - 'v*'
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       release_notes:
@@ -29,7 +26,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.5'
           channel: 'stable'
           cache: true
 
@@ -39,7 +36,7 @@ jobs:
       - name: Create .env file
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
-          echo "POLLING_INTERVAL=${{ vars.POLLING_INTERVAL || '30' }}" >> .env
+          echo "POLLING_INTERVAL=${{ vars.POLLING_INTERVAL || '60' }}" >> .env
 
       - name: Install Apple Certificate
         uses: apple-actions/import-codesign-certs@v2
