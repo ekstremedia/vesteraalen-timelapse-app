@@ -79,22 +79,43 @@ jobs:
             -exportPath export \
             -exportOptionsPlist ExportOptions.plist
           echo "Exported files:"
-          ls -la export/
+          ls -laR export/
 
-      - name: Find IPA file
+      - name: Find and verify IPA
         id: find-ipa
         run: |
-          IPA_PATH=$(find ios/export -name "*.ipa" -type f | head -1)
+          echo "Looking for IPA files..."
+          find ios/export -name "*.ipa" -type f
+          IPA_PATH=$(find ios/export -name "*.ipa" -type f 2>/dev/null | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "ERROR: No IPA file found in ios/export/"
+            ls -laR ios/export/
+            exit 1
+          fi
+          echo "Found IPA at: $IPA_PATH"
+          echo "File size: $(ls -la "$IPA_PATH")"
           echo "IPA_PATH=$IPA_PATH" >> $GITHUB_OUTPUT
-          echo "Found IPA: $IPA_PATH"
 
       - name: Upload to TestFlight
-        uses: apple-actions/upload-testflight-build@v1
-        with:
-          app-path: ${{ steps.find-ipa.outputs.IPA_PATH }}
-          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        env:
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          # Create API key directory
+          mkdir -p ~/.appstoreconnect/private_keys
+
+          # Write API key to expected location
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+
+          # Get IPA path
+          IPA_PATH="${{ steps.find-ipa.outputs.IPA_PATH }}"
+          echo "Uploading IPA: $IPA_PATH"
+
+          # Upload using xcrun altool
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
