@@ -1,9 +1,12 @@
 name: iOS Deploy
 
+# Disabled until iOS signing is configured
+# Uncomment the push trigger when ready:
+# on:
+#   push:
+#     tags:
+#       - 'v*'
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       release_notes:
