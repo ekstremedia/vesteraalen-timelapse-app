@@ -148,15 +148,15 @@ class CameraCard extends StatelessWidget {
   }
 
   void _showImageFullscreen(BuildContext context, Camera camera) {
+    final theme = Theme.of(context);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
           appBar: AppBar(
             title: Text(camera.name),
-            backgroundColor: Colors.black,
-            foregroundColor: Colors.white,
+            backgroundColor: theme.scaffoldBackgroundColor,
           ),
-          backgroundColor: Colors.black,
+          backgroundColor: theme.scaffoldBackgroundColor,
           body: InteractiveViewer(
             minScale: 0.5,
             maxScale: 4.0,

@@ -4,18 +4,23 @@ import 'package:google_fonts/google_fonts.dart';
 /// App theme matching ekstremedia.no website aesthetic.
 /// Dark mode optimized for viewing camera images and timelapses.
 class AppTheme {
-  // Primary teal color matching ekstremedia.no
-  static const Color primaryColor = Color(0xFF4DB6AC);
-  static const Color primaryDark = Color(0xFF009688);
+  // Primary purple color matching ekstremedia.no website
+  static const Color primaryColor = Color(0xFF9D4EDD);
+  static const Color primaryLight = Color(0xFFB76EF0);
+  static const Color primaryDark = Color(0xFF7B2CBF);
 
-  // Surface colors for dark theme - optimized for image viewing
-  static const Color surfaceDark = Color(0xFF0F1419);
-  static const Color surfaceContainerDark = Color(0xFF1A1F26);
-  static const Color surfaceContainerHighDark = Color(0xFF252B33);
+  // Secondary accent colors
+  static const Color accentGreen = Color(0xFF22C55E); // Online status
+  static const Color accentPurple = Color(0xFF8B5CF6);
+
+  // Surface colors for dark theme - purple/navy matching website
+  static const Color surfaceDark = Color(0xFF0D0D1A);
+  static const Color surfaceContainerDark = Color(0xFF1A1A2E);
+  static const Color surfaceContainerHighDark = Color(0xFF252547);
 
   // Text colors for dark theme
-  static const Color onSurfaceDark = Color(0xFFE8EAED);
-  static const Color onSurfaceVariantDark = Color(0xFFB0B8C1);
+  static const Color onSurfaceDark = Color(0xFFFFFFFF);
+  static const Color onSurfaceVariantDark = Color(0xFFB8B8D0);
 
   // Surface colors for light theme
   static const Color surfaceLight = Color(0xFFF8F9FA);
@@ -31,7 +36,8 @@ class AppTheme {
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
         primary: primaryColor,
-        secondary: primaryColor,
+        secondary: accentPurple,
+        tertiary: accentGreen,
         surface: surfaceDark,
         surfaceContainerHighest: surfaceContainerHighDark,
         onSurface: onSurfaceDark,
@@ -50,10 +56,19 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -61,30 +76,30 @@ class AppTheme {
           foregroundColor: onSurfaceDark,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          side: BorderSide(color: primaryColor.withOpacity(0.4)),
+          side: const BorderSide(color: primaryColor, width: 1.5),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: primaryColor),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(foregroundColor: onSurfaceDark),
       ),
       cardTheme: CardThemeData(
         color: surfaceContainerDark,
-        elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.3),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
       ),
-      dividerTheme: DividerThemeData(
-        color: onSurfaceVariantDark.withOpacity(0.2),
-      ),
+      dividerTheme: DividerThemeData(color: primaryColor.withOpacity(0.2)),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surfaceContainerDark,
         headerBackgroundColor: primaryColor,
-        headerForegroundColor: Colors.black,
+        headerForegroundColor: Colors.white,
         dayForegroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return Colors.black;
+            return Colors.white;
           }
           if (states.contains(WidgetState.disabled)) {
             return onSurfaceVariantDark.withOpacity(0.4);
@@ -105,6 +120,15 @@ class AppTheme {
         backgroundColor: surfaceContainerDark,
         selectedItemColor: primaryColor,
         unselectedItemColor: onSurfaceVariantDark,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: primaryColor,
+        linearTrackColor: surfaceContainerHighDark,
+      ),
+      sliderTheme: SliderThemeData(
+        activeTrackColor: primaryColor,
+        thumbColor: primaryColor,
+        inactiveTrackColor: primaryColor.withOpacity(0.3),
       ),
     );
   }

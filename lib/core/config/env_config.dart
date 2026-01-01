@@ -46,5 +46,5 @@ class EnvConfig {
 
   /// Polling interval for camera updates in seconds.
   static int get pollingInterval =>
-      int.tryParse(dotenv.env['POLLING_INTERVAL'] ?? '') ?? 30;
+      int.tryParse(dotenv.env['POLLING_INTERVAL'] ?? '') ?? 60;
 }

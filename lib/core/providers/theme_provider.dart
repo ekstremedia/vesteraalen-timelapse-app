@@ -16,11 +16,12 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     final prefs = ref.watch(sharedPreferencesProvider);
     final value = prefs.getString(_key);
 
-    if (value == null) return ThemeMode.system;
+    // Default to dark mode for new users (matches website aesthetic)
+    if (value == null) return ThemeMode.dark;
 
     return ThemeMode.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => ThemeMode.system,
+      orElse: () => ThemeMode.dark,
     );
   }
 

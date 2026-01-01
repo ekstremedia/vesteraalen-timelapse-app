@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vesteraalen_timelapse/core/providers/theme_provider.dart';
 import 'package:vesteraalen_timelapse/core/providers/locale_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
@@ -30,6 +31,10 @@ class SettingsPage extends ConsumerWidget {
 
           // About Section
           _buildSectionHeader(context, l10n.about),
+          _buildMadeByTile(context, l10n),
+          _buildCameraHardwareTile(context, l10n),
+          _buildOpenSourceTile(context, l10n),
+          const Divider(),
           _buildVersionTile(context, l10n),
           _buildWebsiteTile(context, l10n),
         ],
@@ -204,11 +209,49 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildVersionTile(BuildContext context, AppLocalizations l10n) {
+  Widget _buildMadeByTile(BuildContext context, AppLocalizations l10n) {
     return ListTile(
-      leading: const Icon(Icons.info_outline),
-      title: Text(l10n.version),
-      subtitle: const Text('1.0.0'),
+      leading: const Icon(Icons.person_outline),
+      title: Text(l10n.madeBy),
+      subtitle: Text(l10n.madeByName),
+      trailing: const Icon(Icons.email_outlined, size: 18),
+      onTap: () => _launchUrl('mailto:terjen@gmail.com'),
+    );
+  }
+
+  Widget _buildCameraHardwareTile(BuildContext context, AppLocalizations l10n) {
+    return ListTile(
+      leading: const Icon(Icons.camera_alt_outlined),
+      title: Text(l10n.cameraHardware),
+      subtitle: Text(l10n.cameraHardwareDesc),
+    );
+  }
+
+  Widget _buildOpenSourceTile(BuildContext context, AppLocalizations l10n) {
+    return ListTile(
+      leading: const Icon(Icons.code),
+      title: Text(l10n.openSource),
+      subtitle: Text(l10n.openSourceDesc),
+      trailing: const Icon(Icons.open_in_new, size: 18),
+      onTap: () => _launchUrl('https://github.com/ekstremedia/raspilapse'),
+    );
+  }
+
+  Widget _buildVersionTile(BuildContext context, AppLocalizations l10n) {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final version = snapshot.data?.version ?? '...';
+        final buildNumber = snapshot.data?.buildNumber ?? '';
+        final versionText = buildNumber.isNotEmpty
+            ? '$version ($buildNumber)'
+            : version;
+        return ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: Text(l10n.version),
+          subtitle: Text(versionText),
+        );
+      },
     );
   }
 

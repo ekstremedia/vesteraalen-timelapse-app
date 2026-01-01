@@ -48,6 +48,8 @@ class AppLocalizations {
       'noTimelapseAvailable': 'No timelapse available for this date',
       'showingYesterdaysTimelapse':
           "Today's timelapse is still being created. Showing yesterday's timelapse.",
+      'todayTimelapseNotReady':
+          "Today's timelapse is not ready yet. Timelapses are created overnight, so you can watch videos from yesterday and earlier.",
       'dailyImages': 'Daily Images',
       'daytime': 'Daytime',
       'evening': 'Evening',
@@ -58,6 +60,7 @@ class AppLocalizations {
       'today': 'Today',
       'yesterday': 'Yesterday',
       'goToToday': 'Go to today',
+      'seeYesterdaysVideo': "See yesterday's video",
       'previousDay': 'Previous day',
       'nextDay': 'Next day',
       'selectDate': 'Select date',
@@ -75,6 +78,14 @@ class AppLocalizations {
       'about': 'About',
       'version': 'Version',
       'website': 'Visit Website',
+      'madeBy': 'Made by',
+      'madeByName': 'Terje Nesthus',
+      'cameraHardware': 'Camera Hardware',
+      'cameraHardwareDesc': 'Raspberry Pi with Camera Module 3',
+      'openSource': 'Open Source',
+      'openSourceDesc':
+          'The timelapse software is built with Python and is open source',
+      'viewOnGithub': 'View on GitHub',
 
       // General
       'loading': 'Loading...',
@@ -115,6 +126,8 @@ class AppLocalizations {
       'noTimelapseAvailable': 'Ingen timelapse tilgjengelig for denne datoen',
       'showingYesterdaysTimelapse':
           'Dagens timelapse lages fortsatt. Viser gårsdagens timelapse.',
+      'todayTimelapseNotReady':
+          'Dagens timelapse er ikke klar ennå. Timelapser lages om natten, så du kan se videoer fra i går og tidligere.',
       'dailyImages': 'Daglige bilder',
       'daytime': 'Dag',
       'evening': 'Kveld',
@@ -125,6 +138,7 @@ class AppLocalizations {
       'today': 'I dag',
       'yesterday': 'I går',
       'goToToday': 'Gå til i dag',
+      'seeYesterdaysVideo': 'Se gårsdagens video',
       'previousDay': 'Forrige dag',
       'nextDay': 'Neste dag',
       'selectDate': 'Velg dato',
@@ -142,6 +156,14 @@ class AppLocalizations {
       'about': 'Om',
       'version': 'Versjon',
       'website': 'Besøk nettside',
+      'madeBy': 'Laget av',
+      'madeByName': 'Terje Nesthus',
+      'cameraHardware': 'Kamerautstyr',
+      'cameraHardwareDesc': 'Raspberry Pi med Camera Module 3',
+      'openSource': 'Åpen kildekode',
+      'openSourceDesc':
+          'Timelapse-programvaren er bygget med Python og er åpen kildekode',
+      'viewOnGithub': 'Se på GitHub',
 
       // General
       'loading': 'Laster...',
@@ -182,6 +204,8 @@ class AppLocalizations {
       'noTimelapseAvailable': 'Ingen timelapse tilgjengeleg for denne datoen',
       'showingYesterdaysTimelapse':
           'Dagens timelapse vert laga. Viser gårsdagens timelapse.',
+      'todayTimelapseNotReady':
+          'Dagens timelapse er ikkje klar enno. Timelapsar vert laga om natta, så du kan sjå videoar frå i går og tidlegare.',
       'dailyImages': 'Daglege bilete',
       'daytime': 'Dag',
       'evening': 'Kveld',
@@ -192,6 +216,7 @@ class AppLocalizations {
       'today': 'I dag',
       'yesterday': 'I går',
       'goToToday': 'Gå til i dag',
+      'seeYesterdaysVideo': 'Sjå gårsdagens video',
       'previousDay': 'Førre dag',
       'nextDay': 'Neste dag',
       'selectDate': 'Vel dato',
@@ -209,6 +234,14 @@ class AppLocalizations {
       'about': 'Om',
       'version': 'Versjon',
       'website': 'Besøk nettside',
+      'madeBy': 'Laga av',
+      'madeByName': 'Terje Nesthus',
+      'cameraHardware': 'Kamerautstyr',
+      'cameraHardwareDesc': 'Raspberry Pi med Camera Module 3',
+      'openSource': 'Open kjeldekode',
+      'openSourceDesc':
+          'Timelapse-programvara er bygd med Python og er open kjeldekode',
+      'viewOnGithub': 'Sjå på GitHub',
 
       // General
       'loading': 'Lastar...',
@@ -259,6 +292,7 @@ class AppLocalizations {
   String get seeTimelapse => _get('seeTimelapse');
   String get noTimelapseAvailable => _get('noTimelapseAvailable');
   String get showingYesterdaysTimelapse => _get('showingYesterdaysTimelapse');
+  String get todayTimelapseNotReady => _get('todayTimelapseNotReady');
   String get dailyImages => _get('dailyImages');
   String get daytime => _get('daytime');
   String get evening => _get('evening');
@@ -269,6 +303,7 @@ class AppLocalizations {
   String get today => _get('today');
   String get yesterday => _get('yesterday');
   String get goToToday => _get('goToToday');
+  String get seeYesterdaysVideo => _get('seeYesterdaysVideo');
   String get previousDay => _get('previousDay');
   String get nextDay => _get('nextDay');
   String get selectDate => _get('selectDate');
@@ -286,6 +321,13 @@ class AppLocalizations {
   String get about => _get('about');
   String get version => _get('version');
   String get website => _get('website');
+  String get madeBy => _get('madeBy');
+  String get madeByName => _get('madeByName');
+  String get cameraHardware => _get('cameraHardware');
+  String get cameraHardwareDesc => _get('cameraHardwareDesc');
+  String get openSource => _get('openSource');
+  String get openSourceDesc => _get('openSourceDesc');
+  String get viewOnGithub => _get('viewOnGithub');
 
   // General
   String get loading => _get('loading');

@@ -277,6 +277,31 @@ version: 1.0.0+1
 - Fixed intl package conflicts
 - Added pre-commit hook for auto-formatting
 - Updated all workflows with concurrency settings
+- **Enhanced YouTube player**: Replaced thumbnail-with-link with embedded `YoutubePlayer`
+  - Created `_EmbeddedYoutubePlayer` StatefulWidget with proper lifecycle management
+  - Full playback controls within the app
+  - Option to open in external YouTube app
+- Updated `youtube_player_flutter` to ^9.1.3, `flutter_dotenv` to ^6.0.0
+- **Dark theme redesign**: Updated to match website purple/navy aesthetic
+  - Primary color changed from teal to purple (`#9D4EDD`)
+  - Background changed to navy (`#0D0D1A`)
+  - Cards use purple-tinted surfaces
+  - Added accent colors for green (online status) and secondary purple
+- **Default to dark mode**: New users now start in dark mode
+- **UI/UX improvements**:
+  - Reduced FilledButton border radius (6px instead of ~20px)
+  - Added "today's timelapse not ready" info message with "See yesterday's video" button
+  - Changed fullscreen image backgrounds to match theme
+  - Polling interval changed from 30s to 60s
+- **Settings page enhancements**:
+  - Added "Made by Terje Nesthus" with email link (terjen@gmail.com)
+  - Added "Camera Hardware" info (Raspberry Pi + Camera Module 3)
+  - Added "Open Source" link to github.com/ekstremedia/raspilapse
+  - Version now shows dynamic version + build number via `package_info_plus`
+- **Test coverage**: Increased from 43 to 88 tests
+  - New localization tests (all 3 languages)
+  - New cache service tests
+  - Additional theme color tests
 
 ### 2025-12-31
 - Created Flutter project with `flutter create --org no.ekstremedia`

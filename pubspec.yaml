@@ -32,8 +32,8 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.3.3
 
-  # YouTube Player (cross-platform)
-  youtube_player_iframe: ^5.2.0
+  # YouTube Player
+  youtube_player_flutter: ^9.1.3
 
   # Date/Time Formatting
   intl: any
@@ -46,6 +46,9 @@ dependencies:
 
   # SVG support
   flutter_svg: ^2.0.17
+
+  # Package info (version, build number)
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

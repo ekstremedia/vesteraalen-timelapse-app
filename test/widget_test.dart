@@ -31,13 +31,43 @@ void main() {
   });
 
   test('AppTheme - dark theme has correct properties', () {
-    expect(AppTheme.primaryColor, const Color(0xFF4DB6AC));
+    expect(AppTheme.primaryColor, const Color(0xFF9D4EDD));
     expect(AppTheme.darkTheme.brightness, Brightness.dark);
     expect(AppTheme.lightTheme.brightness, Brightness.light);
   });
 
   test('AppTheme - primary colors match', () {
-    expect(AppTheme.primaryDark, const Color(0xFF009688));
-    expect(AppTheme.surfaceDark, const Color(0xFF0F1419));
+    expect(AppTheme.primaryDark, const Color(0xFF7B2CBF));
+    expect(AppTheme.surfaceDark, const Color(0xFF0D0D1A));
+  });
+
+  test('AppTheme - accent colors are defined', () {
+    expect(AppTheme.accentGreen, const Color(0xFF22C55E));
+    expect(AppTheme.accentPurple, const Color(0xFF8B5CF6));
+    expect(AppTheme.primaryLight, const Color(0xFFB76EF0));
+  });
+
+  test('AppTheme - dark theme surface colors', () {
+    expect(AppTheme.surfaceContainerDark, const Color(0xFF1A1A2E));
+    expect(AppTheme.surfaceContainerHighDark, const Color(0xFF252547));
+  });
+
+  test('AppTheme - dark theme text colors', () {
+    expect(AppTheme.onSurfaceDark, const Color(0xFFFFFFFF));
+    expect(AppTheme.onSurfaceVariantDark, const Color(0xFFB8B8D0));
+  });
+
+  test('AppTheme - light theme colors are defined', () {
+    expect(AppTheme.surfaceLight, const Color(0xFFF8F9FA));
+    expect(AppTheme.surfaceContainerLight, const Color(0xFFFFFFFF));
+    expect(AppTheme.onSurfaceLight, const Color(0xFF1F2937));
+  });
+
+  test('AppTheme - dark theme uses Material 3', () {
+    expect(AppTheme.darkTheme.useMaterial3, isTrue);
+  });
+
+  test('AppTheme - light theme uses Material 3', () {
+    expect(AppTheme.lightTheme.useMaterial3, isTrue);
   });
 }
