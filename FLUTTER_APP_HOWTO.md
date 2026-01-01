@@ -399,47 +399,106 @@ If using non-HTTPS APIs, edit `ios/Runner/Info.plist`:
 </dict>
 ```
 
-### Set Up Xcode Cloud CI Scripts
+### iOS Code Signing for CI/CD (GitHub Actions)
 
-Create `ios/ci_scripts/ci_post_clone.sh`:
-```bash
-#!/bin/sh
-set -e
+#### Step 1: Create Apple Distribution Certificate
 
-echo "📦 Installing Flutter..."
-git clone https://github.com/flutter/flutter.git -b stable $HOME/flutter
-export PATH="$PATH:$HOME/flutter/bin"
+1. Open **Keychain Access** on your Mac
+2. **Keychain Access** → **Certificate Assistant** → **Request a Certificate from a Certificate Authority**
+3. Fill in:
+   - Email: Your Apple ID email
+   - Common Name: Your name
+   - CA Email Address: Leave empty
+   - Request is: Saved to disk
+4. Save the `.certSigningRequest` file
 
-echo "🔧 Flutter doctor..."
-flutter doctor -v
+5. Go to [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list)
+6. Click **+** → **Apple Distribution**
+7. Upload the CSR file
+8. Download the certificate (`.cer` file)
+9. Double-click to install in Keychain
 
-echo "📥 Getting packages..."
-flutter pub get
+#### Step 2: Export Certificate as .p12
 
-echo "🍎 Precaching iOS..."
-flutter precache --ios
+1. Open **Keychain Access**
+2. Find your "Apple Distribution: Your Name" certificate
+3. Right-click → **Export**
+4. Save as `.p12` file
+5. Set a password (remember this for CI/CD!)
+6. Convert to base64:
+   ```bash
+   base64 -i certificate.p12 | pbcopy  # Copies to clipboard
+   ```
 
-echo "📦 Installing pods..."
-cd $CI_PRIMARY_REPOSITORY_PATH/ios
-pod install
+#### Step 3: Create App ID
 
-echo "✅ Post-clone complete!"
-```
+1. Go to [Apple Developer Portal](https://developer.apple.com/account/resources/identifiers/list)
+2. Click **+** → **App IDs** → **App**
+3. Fill in:
+   - Description: Your App Name
+   - Bundle ID: Explicit → `no.ekstremedia.vesteraalenTimelapse`
+4. Register
 
-Create `ios/ci_scripts/ci_pre_xcodebuild.sh`:
-```bash
-#!/bin/sh
-set -e
+#### Step 4: Create Provisioning Profile
 
-export FLUTTER_ROOT="$HOME/flutter"
-echo "FLUTTER_ROOT=$FLUTTER_ROOT" >> $CI_PRIMARY_REPOSITORY_PATH/ios/Flutter/Generated.xcconfig
+1. Go to [Apple Developer Portal](https://developer.apple.com/account/resources/profiles/list)
+2. Click **+** → **App Store Connect**
+3. Select your App ID
+4. Select your Distribution Certificate
+5. Name: `YourApp AppStore`
+6. Download the `.mobileprovision` file
+7. Convert to base64:
+   ```bash
+   base64 -i profile.mobileprovision | pbcopy
+   ```
 
-echo "✅ Pre-xcodebuild complete!"
-```
+#### Step 5: Create App Store Connect API Key
 
-Make executable:
-```bash
-chmod +x ios/ci_scripts/*.sh
+1. Go to [App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
+2. Click **+** to generate new key
+3. Name: `CI/CD Key`, Access: `App Manager`
+4. **Download the .p8 file immediately** (only available once!)
+5. Note the **Key ID** and **Issuer ID**
+
+#### Step 6: Add GitHub Secrets
+
+| Secret | Value |
+|--------|-------|
+| `IOS_CERTIFICATE_BASE64` | Base64 of .p12 file |
+| `IOS_CERTIFICATE_PASSWORD` | Password used when exporting .p12 |
+| `IOS_PROVISIONING_PROFILE_BASE64` | Base64 of .mobileprovision file |
+| `IOS_PROVISIONING_PROFILE_NAME` | Name of profile (e.g., `YourApp AppStore`) |
+| `IOS_CODE_SIGN_IDENTITY` | `Apple Distribution: Your Name (TEAM_ID)` |
+| `IOS_TEAM_ID` | Your 10-character Team ID |
+| `APP_STORE_CONNECT_ISSUER_ID` | From API keys page |
+| `APP_STORE_CONNECT_KEY_ID` | Key ID from API keys page |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Contents of .p8 file |
+
+#### Step 7: Create ExportOptions.plist
+
+Create `ios/ExportOptions.plist`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>teamID</key>
+    <string>YOUR_TEAM_ID</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>your.bundle.identifier</key>
+        <string>Your Provisioning Profile Name</string>
+    </dict>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>uploadSymbols</key>
+    <true/>
+</dict>
+</plist>
 ```
 
 ---
@@ -603,7 +662,103 @@ Add these in **Settings** → **Secrets and variables** → **Actions**:
 3. Add your email address to the group
 4. Trigger the workflow - you'll receive an email invite to test
 
-### Xcode Cloud Setup (iOS)
+### GitHub Actions: iOS Deploy to TestFlight
+
+Create `.github/workflows/ios-deploy.yml`:
+```yaml
+name: iOS Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.5'
+          channel: 'stable'
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      - name: Increment build number
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+          sed -i '' "s/version: \(.*\)+.*/version: \1+$BUILD_NUMBER/" pubspec.yaml
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Build Archive
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath Runner.xcarchive \
+            archive \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Export IPA
+        run: |
+          cd ios
+          xcodebuild -exportArchive \
+            -archivePath Runner.xcarchive \
+            -exportPath export \
+            -exportOptionsPlist ExportOptions.plist
+
+      - name: Find IPA file
+        id: find-ipa
+        run: |
+          IPA_PATH=$(find ios/export -name "*.ipa" -type f | head -1)
+          echo "IPA_PATH=$IPA_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: ${{ steps.find-ipa.outputs.IPA_PATH }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+```
+
+**Key Points:**
+- Build WITHOUT code signing first (`CODE_SIGNING_REQUIRED=NO`)
+- Sign during export using `ExportOptions.plist`
+- Use `app-store` method (not `app-store-connect`) to avoid auth issues
+- Find IPA dynamically (may not be named `Runner.ipa`)
+
+### Xcode Cloud Setup (Alternative)
 
 1. Open Xcode
 2. **Product** → **Xcode Cloud** → **Create Workflow**
@@ -808,4 +963,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2026-01-01*
+*Last updated: 2026-01-01 (iOS deployment added)*

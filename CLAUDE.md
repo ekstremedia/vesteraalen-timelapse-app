@@ -204,17 +204,27 @@ git push origin main
 
 **Workflow:** `.github/workflows/android-deploy.yml`
 
-### iOS (Xcode Cloud)
+### iOS (GitHub Actions)
 
 **Trigger:** Push to `main` branch
 
 ```bash
 git push origin main
-# → Xcode Cloud builds IPA
+# → Builds iOS app (no codesign)
+# → Archives and exports IPA with signing
 # → Uploads to TestFlight
 ```
 
-**Scripts:** `ios/ci_scripts/ci_post_clone.sh`, `ci_pre_xcodebuild.sh`
+**Workflow:** `.github/workflows/ios-deploy.yml`
+**Signing Config:** `ios/ExportOptions.plist`
+
+**Required Secrets:**
+- `IOS_CERTIFICATE_BASE64` - Distribution certificate
+- `IOS_CERTIFICATE_PASSWORD` - Certificate password
+- `IOS_PROVISIONING_PROFILE_BASE64` - App Store profile
+- `APP_STORE_CONNECT_ISSUER_ID` - API authentication
+- `APP_STORE_CONNECT_KEY_ID` - API authentication
+- `APP_STORE_CONNECT_PRIVATE_KEY` - .p8 file contents
 
 ### Version Management
 
@@ -246,6 +256,10 @@ version: 1.0.0+1
 | Build fails on CI | Ensure .env.example exists |
 | iOS build fails | Run `flutter precache --ios` before `pod install` |
 | Android signing mismatch | Uninstall app before installing from Firebase |
+| iOS provisioning profile applies to Pods | Use `CODE_SIGNING_REQUIRED=NO` during archive, sign during export |
+| iOS base64 decode fails | Use `echo -n` with env variable, not direct secret interpolation |
+| iOS export requires account auth | Use `app-store` method, not `app-store-connect` |
+| IPA not found at expected path | Find IPA dynamically with `find` command |
 
 ---
 
@@ -259,11 +273,11 @@ version: 1.0.0+1
 | YouTube player | ✅ Done | Embedded timelapse playback |
 | Dark/light theme | ✅ Done | Matches website |
 | Localization (nb/nn/en) | ✅ Done | 3 languages |
-| Settings page | ✅ Done | Theme + language selection |
+| Settings page | ✅ Done | Theme + language + about section |
 | CI/CD Android | ✅ Done | GitHub Actions + Firebase App Distribution |
-| CI/CD iOS | 🔲 Pending | Xcode Cloud (signing not configured) |
+| CI/CD iOS | 🔄 In Progress | GitHub Actions + TestFlight (upload pending) |
 | Google Play Store | 🔲 Pending | Internal testing track |
-| Apple App Store | 🔲 Pending | TestFlight |
+| Apple App Store | 🔄 In Progress | App created, TestFlight pending |
 
 ---
 
@@ -302,6 +316,16 @@ version: 1.0.0+1
   - New localization tests (all 3 languages)
   - New cache service tests
   - Additional theme color tests
+- **iOS App Store Setup**:
+  - Created Apple Distribution certificate via Keychain Access
+  - Created App ID: `no.ekstremedia.vesteraalenTimelapse`
+  - Created App Store provisioning profile: `Vesteraalen Timelapse AppStore`
+  - Team ID: `5Q78RA8DA4`
+  - Created app in App Store Connect
+  - Generated App Store Connect API key for CI/CD
+  - Configured GitHub Actions workflow for iOS deployment
+  - Created `ios/ExportOptions.plist` for code signing
+  - Added all iOS-related secrets to GitHub
 
 ### 2025-12-31
 - Created Flutter project with `flutter create --org no.ekstremedia`
