@@ -35,9 +35,6 @@ dependencies:
   # YouTube Player (cross-platform)
   youtube_player_iframe: ^5.2.0
 
-  # Date/Time Formatting
-  intl: ^0.20.1
-
   # Environment Config
   flutter_dotenv: ^6.0.0
 
