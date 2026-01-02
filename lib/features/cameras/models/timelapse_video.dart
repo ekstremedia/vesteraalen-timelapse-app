@@ -1,5 +1,9 @@
+import 'package:vesteraalen_timelapse/features/cameras/providers/date_picker_provider.dart';
+
 /// Timelapse video model representing a day's timelapse.
+///
 /// Maps to the PiTimelapseVideo model in the Laravel backend.
+/// Contains video URLs, thumbnails, and daily summary images (keogram, etc.).
 class TimelapseVideo {
   final int id;
   final String? cameraId;
@@ -41,11 +45,11 @@ class TimelapseVideo {
     );
   }
 
-  /// Convert TimelapseVideo to JSON.
+  /// Converts this video to a JSON map.
   Map<String, dynamic> toJson() => {
     'id': id,
     'camera_id': cameraId,
-    'date': date.toIso8601String().split('T').first,
+    'date': date.toApiFormat(),
     'title': title,
     'youtube_id': youtubeId,
     'video_url': videoUrl,
@@ -117,7 +121,7 @@ class TimelapseVideo {
 
   @override
   String toString() =>
-      'TimelapseVideo(id: $id, cameraId: $cameraId, date: ${date.toIso8601String().split('T').first})';
+      'TimelapseVideo(id: $id, cameraId: $cameraId, date: ${date.toApiFormat()})';
 }
 
 /// Response model for timelapse detail API.

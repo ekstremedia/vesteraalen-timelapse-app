@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vesteraalen_timelapse/core/constants/app_constants.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/pages/camera_detail_page.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/cameras_provider.dart';
@@ -10,6 +11,12 @@ import 'package:vesteraalen_timelapse/features/settings/pages/settings_page.dart
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
 
 /// Main page displaying a responsive grid of cameras.
+///
+/// Features:
+/// - Responsive grid layout adapting to screen size
+/// - Pull-to-refresh for manual camera list updates
+/// - Navigation to camera detail page for timelapse viewing
+/// - Settings access from app bar
 class CamerasListPage extends ConsumerWidget {
   const CamerasListPage({super.key});
 
@@ -45,7 +52,7 @@ class CamerasListPage extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CircularProgressIndicator(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(l10n.loadingCameras),
           ],
         ),
@@ -59,15 +66,15 @@ class CamerasListPage extends ConsumerWidget {
           children: [
             Icon(
               Icons.error_outline,
-              size: 64,
+              size: AppDimensions.iconXxl,
               color: Theme.of(context).colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               state.error ?? l10n.somethingWentWrong,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               onPressed: () => ref.read(camerasProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
@@ -83,8 +90,11 @@ class CamerasListPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.videocam_off_outlined, size: 64),
-            const SizedBox(height: 16),
+            const Icon(
+              Icons.videocam_off_outlined,
+              size: AppDimensions.iconXxl,
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Text(l10n.noCameras),
           ],
         ),
@@ -106,12 +116,12 @@ class CamerasListPage extends ConsumerWidget {
       slivers: [
         // Camera grid (no loading indicator for silent background updates)
         SliverPadding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
+              mainAxisSpacing: AppSpacing.lg,
+              crossAxisSpacing: AppSpacing.lg,
               childAspectRatio: _calculateChildAspectRatio(crossAxisCount),
             ),
             delegate: SliverChildBuilderDelegate((context, index) {
@@ -130,10 +140,7 @@ class CamerasListPage extends ConsumerWidget {
 
   /// Calculate number of columns based on screen width.
   int _calculateCrossAxisCount(double width) {
-    if (width >= 1200) return 4;
-    if (width >= 900) return 3;
-    if (width >= 600) return 2;
-    return 1;
+    return AppDimensions.getGridColumns(width);
   }
 
   /// Calculate aspect ratio based on number of columns.

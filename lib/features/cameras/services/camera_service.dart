@@ -1,26 +1,39 @@
 import 'package:dio/dio.dart';
 import 'package:vesteraalen_timelapse/core/config/env_config.dart';
+import 'package:vesteraalen_timelapse/core/constants/app_constants.dart';
 import 'package:vesteraalen_timelapse/core/services/api_client.dart';
 import 'package:vesteraalen_timelapse/core/services/cache_service.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/timelapse_video.dart';
+import 'package:vesteraalen_timelapse/features/cameras/providers/date_picker_provider.dart';
 
 /// Service for fetching camera and timelapse data from the API.
-/// Includes caching to prevent excessive API calls.
+///
+/// Provides methods to fetch cameras, timelapse videos, and available dates
+/// with built-in caching to reduce API calls and improve performance.
+///
+/// Cache durations:
+/// - Cameras list: 30 seconds (images update frequently)
+/// - Today's timelapse: 30 seconds (may still be processing)
+/// - Historical timelapse: 5 minutes (won't change)
+/// - Available dates: 1 hour (changes once daily)
 class CameraService {
   final ApiClient _apiClient;
   final CacheService _cacheService;
 
   CameraService(this._apiClient, this._cacheService);
 
-  /// Fetch all active cameras with current images and latest video info.
-  /// Cached for 30 seconds by default.
+  /// Fetches all active cameras with current images and latest video info.
+  ///
+  /// Returns a list of [Camera] objects from the API or cache.
+  /// Set [forceRefresh] to true to bypass the cache and fetch fresh data.
+  ///
+  /// Throws [ApiException] if the API request fails.
   Future<List<Camera>> getCameras({bool forceRefresh = false}) async {
-    const cacheKey = 'cameras_list';
     final cacheDuration = Duration(seconds: EnvConfig.cacheCamerasTtl);
 
     if (!forceRefresh) {
-      final cached = _cacheService.get<List<dynamic>>(cacheKey);
+      final cached = _cacheService.get<List<dynamic>>(CacheKeys.camerasList);
       if (cached != null) {
         return cached
             .map((json) => Camera.fromJson(json as Map<String, dynamic>))
@@ -29,12 +42,18 @@ class CameraService {
     }
 
     try {
-      final response = await _apiClient.get('/api/app/cameras');
-      final List<dynamic> data = response.data['cameras'] as List<dynamic>;
+      final response = await _apiClient.get(ApiEndpoints.cameras);
+      final data = response.data;
 
-      _cacheService.set(cacheKey, data, cacheDuration);
+      // Validate response format
+      if (data is! Map || data['cameras'] is! List) {
+        throw ApiException(message: 'Invalid API response format');
+      }
 
-      return data
+      final List<dynamic> cameras = data['cameras'] as List<dynamic>;
+      _cacheService.set(CacheKeys.camerasList, cameras, cacheDuration);
+
+      return cameras
           .map((json) => Camera.fromJson(json as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
@@ -42,17 +61,23 @@ class CameraService {
     }
   }
 
-  /// Fetch timelapse detail for a specific camera and date.
-  /// Cached for 30 seconds for today/yesterday, 5 minutes for historical dates.
+  /// Fetches timelapse detail for a specific camera and date.
+  ///
+  /// Returns a [TimelapseDetail] object with video URLs and image gallery.
+  /// Recent dates (today/yesterday) use shorter cache TTL since they may
+  /// still be processing.
+  ///
+  /// Set [forceRefresh] to true to bypass the cache.
+  /// Throws [ApiException] if the API request fails.
   Future<TimelapseDetail> getTimelapse(
     String cameraId,
     DateTime date, {
     bool forceRefresh = false,
   }) async {
-    final dateStr = _formatDate(date);
-    final cacheKey = 'timelapse_${cameraId}_$dateStr';
+    final dateStr = date.toApiFormat();
+    final cacheKey = CacheKeys.timelapse(cameraId, dateStr);
 
-    // Use shorter cache for recent dates
+    // Use shorter cache for recent dates that may still be updating
     final isRecent = _isRecentDate(date);
     final cacheDuration = Duration(
       seconds: isRecent
@@ -69,25 +94,34 @@ class CameraService {
 
     try {
       final response = await _apiClient.get(
-        '/api/app/timelapse/$cameraId/$dateStr',
+        ApiEndpoints.timelapse(cameraId, dateStr),
       );
-      final data = response.data as Map<String, dynamic>;
+      final data = response.data;
+
+      // Validate response format
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(message: 'Invalid API response format');
+      }
 
       _cacheService.set(cacheKey, data, cacheDuration);
-
       return TimelapseDetail.fromJson(data);
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
     }
   }
 
-  /// Fetch available timelapse dates for a camera.
-  /// Cached for 1 hour since new dates are only added once per day.
+  /// Fetches available timelapse dates for a camera.
+  ///
+  /// Returns a list of [DateTime] objects representing dates with timelapse
+  /// videos. Cached for 1 hour since new dates are only added once per day.
+  ///
+  /// Set [forceRefresh] to true to bypass the cache.
+  /// Throws [ApiException] if the API request fails.
   Future<List<DateTime>> getAvailableDates(
     String cameraId, {
     bool forceRefresh = false,
   }) async {
-    final cacheKey = 'available_dates_$cameraId';
+    final cacheKey = CacheKeys.availableDates(cameraId);
     final cacheDuration = Duration(seconds: EnvConfig.cacheAvailableDatesTtl);
 
     if (!forceRefresh) {
@@ -99,10 +133,16 @@ class CameraService {
 
     try {
       final response = await _apiClient.get(
-        '/api/app/timelapse/$cameraId/dates',
+        ApiEndpoints.availableDates(cameraId),
       );
-      final List<dynamic> dates = response.data['dates'] as List<dynamic>;
+      final data = response.data;
 
+      // Validate response format
+      if (data is! Map || data['dates'] is! List) {
+        throw ApiException(message: 'Invalid API response format');
+      }
+
+      final List<dynamic> dates = data['dates'] as List<dynamic>;
       _cacheService.set(cacheKey, dates, cacheDuration);
 
       return dates.map((s) => DateTime.parse(s as String)).toList();
@@ -111,39 +151,37 @@ class CameraService {
     }
   }
 
-  /// Invalidate cached cameras list.
+  /// Invalidates the cached cameras list, forcing a fresh fetch on next call.
   void invalidateCameras() {
-    _cacheService.invalidate('cameras_list');
+    _cacheService.invalidate(CacheKeys.camerasList);
   }
 
-  /// Invalidate cached timelapse for a specific camera and date.
+  /// Invalidates cached timelapse for a specific camera and date.
   void invalidateTimelapse(String cameraId, DateTime date) {
-    final dateStr = _formatDate(date);
-    _cacheService.invalidate('timelapse_${cameraId}_$dateStr');
+    final dateStr = date.toApiFormat();
+    _cacheService.invalidate(CacheKeys.timelapse(cameraId, dateStr));
   }
 
-  /// Invalidate cached available dates for a camera.
+  /// Invalidates cached available dates for a camera.
   void invalidateAvailableDates(String cameraId) {
-    _cacheService.invalidate('available_dates_$cameraId');
+    _cacheService.invalidate(CacheKeys.availableDates(cameraId));
   }
 
-  /// Invalidate all cached data for a camera.
+  /// Invalidates all cached data for a specific camera.
   void invalidateCamera(String cameraId) {
     _cacheService.invalidatePattern(cameraId);
-    _cacheService.invalidate('cameras_list');
+    _cacheService.invalidate(CacheKeys.camerasList);
   }
 
-  /// Clear all cached data.
+  /// Clears all cached data.
   void clearCache() {
     _cacheService.clear();
   }
 
-  /// Format date for API requests.
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
-  /// Check if date is today or yesterday (recent).
+  /// Checks if a date is recent (today or yesterday).
+  ///
+  /// Recent dates use shorter cache TTL since timelapse videos
+  /// may still be processing.
   bool _isRecentDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

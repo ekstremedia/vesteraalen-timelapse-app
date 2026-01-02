@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:vesteraalen_timelapse/core/providers/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:vesteraalen_timelapse/core/constants/app_constants.dart';
 import 'package:vesteraalen_timelapse/core/providers/locale_provider.dart';
+import 'package:vesteraalen_timelapse/core/providers/theme_provider.dart';
 import 'package:vesteraalen_timelapse/core/providers/websocket_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Settings page for theme and language selection.
+///
+/// Provides controls for:
+/// - Theme mode (light/dark/system)
+/// - App language (Norwegian Bokmål, Nynorsk, English)
+/// - About section with app info and credits
+/// - WebSocket connection status indicator
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -45,9 +52,15 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
+  /// Builds a section header with styled title text.
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xl,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -212,12 +225,13 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
+  /// Builds the "Made by" credit tile with email link.
   Widget _buildMadeByTile(BuildContext context, AppLocalizations l10n) {
     return ListTile(
       leading: const Icon(Icons.person_outline),
       title: Text(l10n.madeBy),
       subtitle: Text(l10n.madeByName),
-      trailing: const Icon(Icons.email_outlined, size: 18),
+      trailing: const Icon(Icons.email_outlined, size: AppDimensions.iconMd),
       onTap: () => _launchUrl('mailto:terjen@gmail.com'),
     );
   }
@@ -230,12 +244,13 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
+  /// Builds the open source repository link tile.
   Widget _buildOpenSourceTile(BuildContext context, AppLocalizations l10n) {
     return ListTile(
       leading: const Icon(Icons.code),
       title: Text(l10n.openSource),
       subtitle: Text(l10n.openSourceDesc),
-      trailing: const Icon(Icons.open_in_new, size: 18),
+      trailing: const Icon(Icons.open_in_new, size: AppDimensions.iconMd),
       onTap: () => _launchUrl('https://github.com/ekstremedia/raspilapse'),
     );
   }
@@ -274,6 +289,7 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
+  /// Builds the WebSocket connection status indicator tile.
   Widget _buildWebSocketTile(
     BuildContext context,
     AppLocalizations l10n,
@@ -285,22 +301,24 @@ class SettingsPage extends ConsumerWidget {
         return isConnected ? l10n.wsConnected : l10n.wsDisconnected;
       },
       loading: () => l10n.wsConnecting,
-      error: (_, __) => l10n.wsError,
+      error: (_, _) => l10n.wsError,
     );
 
     final statusColor = connectionState.when(
       data: (isConnected) {
-        if (isConnected == null) return Colors.grey;
-        return isConnected ? Colors.green : Colors.red;
+        if (isConnected == null) return AppStatusColors.disabled;
+        return isConnected
+            ? AppStatusColors.connected
+            : AppStatusColors.disconnected;
       },
-      loading: () => Colors.orange,
-      error: (_, __) => Colors.red,
+      loading: () => AppStatusColors.connecting,
+      error: (_, _) => AppStatusColors.disconnected,
     );
 
     return ListTile(
       leading: Container(
-        width: 12,
-        height: 12,
+        width: AppDimensions.statusIndicatorSize,
+        height: AppDimensions.statusIndicatorSize,
         decoration: BoxDecoration(shape: BoxShape.circle, color: statusColor),
       ),
       title: Text(l10n.webSocketConnection),

@@ -1,16 +1,71 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vesteraalen_timelapse/core/constants/app_constants.dart';
+import 'package:vesteraalen_timelapse/core/widgets/image_preload_mixin.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/cameras_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
 
 /// A card widget displaying camera information and current image.
-class CameraCard extends StatelessWidget {
+///
+/// Features:
+/// - Displays camera thumbnail with tap-to-fullscreen functionality
+/// - Shows camera name, location/video count, and last update time
+/// - Seamless image transitions using preloading (no flickering)
+/// - Green flash animation on clock icon when image updates
+/// - "See timelapse" button to navigate to camera detail
+class CameraCard extends StatefulWidget {
+  /// The camera data to display.
   final Camera camera;
+
+  /// Callback when the timelapse button is pressed.
   final VoidCallback? onTimelapsePressed;
 
   const CameraCard({super.key, required this.camera, this.onTimelapsePressed});
+
+  @override
+  State<CameraCard> createState() => _CameraCardState();
+}
+
+class _CameraCardState extends State<CameraCard>
+    with SingleTickerProviderStateMixin, ImagePreloadMixin {
+  late AnimationController _flashController;
+
+  Camera get camera => widget.camera;
+  VoidCallback? get onTimelapsePressed => widget.onTimelapsePressed;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDisplayedUrl(camera.currentImageUrl);
+
+    // Animation controller for clock icon flash (normal → green → normal)
+    _flashController = AnimationController(
+      duration: AppDurations.imageFlashAnimation,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _flashController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(CameraCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    handleUrlChange(camera.currentImageUrl);
+  }
+
+  @override
+  void onImagePreloaded() {
+    // Trigger green flash animation on clock icon
+    _flashController.forward().then((_) {
+      if (mounted) _flashController.reverse();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +81,7 @@ class CameraCard extends StatelessWidget {
           // Camera image - tappable to view fullscreen
           Expanded(
             child: InkWell(
-              onTap: camera.hasCurrentImage
+              onTap: hasDisplayableImage
                   ? () => _showImageFullscreen(context, camera)
                   : null,
               child: _buildImage(context),
@@ -35,7 +90,7 @@ class CameraCard extends StatelessWidget {
 
           // Camera info and timelapse button
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -50,7 +105,7 @@ class CameraCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
 
                 // Location or video count
                 Row(
@@ -59,10 +114,10 @@ class CameraCard extends StatelessWidget {
                       camera.location != null
                           ? Icons.location_on_outlined
                           : Icons.video_library_outlined,
-                      size: 14,
+                      size: AppDimensions.iconSm,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         camera.location ?? l10n.videoCount(camera.videoCount),
@@ -76,18 +131,32 @@ class CameraCard extends StatelessWidget {
                   ],
                 ),
 
-                // Image updated time
+                // Image updated time with animated clock icon
                 if (camera.currentImageUpdatedAt != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14,
-                          color: theme.colorScheme.onSurfaceVariant,
+                        AnimatedBuilder(
+                          animation: _flashController,
+                          builder: (context, child) {
+                            final curvedValue = Curves.easeInOut.transform(
+                              _flashController.value,
+                            );
+                            final normalColor =
+                                theme.colorScheme.onSurfaceVariant;
+                            return Icon(
+                              Icons.access_time,
+                              size: AppDimensions.iconSm,
+                              color: Color.lerp(
+                                normalColor,
+                                AppStatusColors.connected,
+                                curvedValue,
+                              ),
+                            );
+                          },
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           l10n.formatRelativeTime(
                             camera.currentImageUpdatedAt!,
@@ -100,14 +169,17 @@ class CameraCard extends StatelessWidget {
                     ),
                   ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
 
                 // See timelapse button
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: onTimelapsePressed,
-                    icon: const Icon(Icons.play_circle_outline, size: 18),
+                    icon: const Icon(
+                      Icons.play_circle_outline,
+                      size: AppDimensions.iconMd,
+                    ),
                     label: Text(l10n.seeTimelapse),
                   ),
                 ),
@@ -119,16 +191,17 @@ class CameraCard extends StatelessWidget {
     );
   }
 
+  /// Builds the camera image with placeholder and error handling.
   Widget _buildImage(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (!camera.hasCurrentImage) {
+    if (!hasDisplayableImage) {
       return Container(
         color: theme.colorScheme.surfaceContainerHighest,
         child: Center(
           child: Icon(
             Icons.camera_alt_outlined,
-            size: 48,
+            size: AppDimensions.iconXl,
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
@@ -139,22 +212,19 @@ class CameraCard extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         CachedNetworkImage(
-          imageUrl: camera.currentImageUrl!,
+          imageUrl: displayedImageUrl!,
           fit: BoxFit.cover,
-          // Empty placeholder - no loading spinner, just shows background briefly
-          placeholder: (context, url) =>
-              Container(color: theme.colorScheme.surfaceContainerHighest),
-          // Instant transition - no fade animation for seamless updates
+          // No placeholder needed - we preload before switching URLs
+          placeholder: (context, url) => const SizedBox.shrink(),
           fadeInDuration: Duration.zero,
           fadeOutDuration: Duration.zero,
-          // Use memory cache to improve performance
-          memCacheWidth: 800,
+          memCacheWidth: AppDimensions.imageCacheWidth,
           errorWidget: (context, url, error) => Container(
             color: theme.colorScheme.surfaceContainerHighest,
             child: Center(
               child: Icon(
                 Icons.broken_image_outlined,
-                size: 48,
+                size: AppDimensions.iconXl,
                 color: theme.colorScheme.error,
               ),
             ),
@@ -162,21 +232,26 @@ class CameraCard extends StatelessWidget {
         ),
         // Zoom hint icon
         Positioned(
-          top: 8,
-          right: 8,
+          top: AppSpacing.sm,
+          right: AppSpacing.sm,
           child: Container(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(AppSpacing.xs),
             decoration: BoxDecoration(
               color: Colors.black54,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
             ),
-            child: const Icon(Icons.zoom_in, color: Colors.white, size: 20),
+            child: const Icon(
+              Icons.zoom_in,
+              color: Colors.white,
+              size: AppDimensions.iconLg,
+            ),
           ),
         ),
       ],
     );
   }
 
+  /// Opens the fullscreen image viewer for the camera.
   void _showImageFullscreen(BuildContext context, Camera camera) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -186,27 +261,61 @@ class CameraCard extends StatelessWidget {
   }
 }
 
-/// Fullscreen image viewer that updates with polling and WebSocket.
-class _FullscreenImageViewer extends ConsumerWidget {
+/// Fullscreen image viewer with pinch-to-zoom and real-time updates.
+///
+/// Watches the cameras provider for updates via polling and WebSocket,
+/// using preloading for seamless image transitions.
+class _FullscreenImageViewer extends ConsumerStatefulWidget {
   final String cameraId;
 
   const _FullscreenImageViewer({required this.cameraId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_FullscreenImageViewer> createState() =>
+      _FullscreenImageViewerState();
+}
+
+class _FullscreenImageViewerState
+    extends ConsumerState<_FullscreenImageViewer> {
+  String? _displayedImageUrl;
+  String? _pendingImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    final camerasState = ref.read(camerasProvider);
+    final camera = camerasState.cameras
+        .where((c) => c.cameraId == widget.cameraId)
+        .firstOrNull;
+    _displayedImageUrl = camera?.currentImageUrl;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final camerasState = ref.watch(camerasProvider);
 
     // Find the camera by ID
     final camera = camerasState.cameras
-        .where((c) => c.cameraId == cameraId)
+        .where((c) => c.cameraId == widget.cameraId)
         .firstOrNull;
 
-    if (camera == null || !camera.hasCurrentImage) {
+    // Check for new image URL and preload
+    final newUrl = camera?.currentImageUrl;
+    if (newUrl != null &&
+        newUrl != _displayedImageUrl &&
+        newUrl != _pendingImageUrl) {
+      _pendingImageUrl = newUrl;
+      _preloadAndSwitch(newUrl);
+    }
+
+    if (camera == null || _displayedImageUrl == null) {
       return Scaffold(
         appBar: AppBar(backgroundColor: theme.scaffoldBackgroundColor),
         backgroundColor: theme.scaffoldBackgroundColor,
-        body: const Center(child: Icon(Icons.broken_image, size: 64)),
+        body: const Center(
+          child: Icon(Icons.broken_image, size: AppDimensions.iconXxl),
+        ),
       );
     }
 
@@ -221,16 +330,36 @@ class _FullscreenImageViewer extends ConsumerWidget {
         maxScale: 4.0,
         child: Center(
           child: CachedNetworkImage(
-            imageUrl: camera.currentImageUrl!,
+            imageUrl: _displayedImageUrl!,
             fit: BoxFit.contain,
             fadeInDuration: Duration.zero,
             fadeOutDuration: Duration.zero,
-            placeholder: (context, url) => const CircularProgressIndicator(),
+            placeholder: (context, url) => const SizedBox.shrink(),
             errorWidget: (context, url, error) =>
                 const Icon(Icons.broken_image, color: Colors.white),
           ),
         ),
       ),
     );
+  }
+
+  /// Preloads an image and switches to it once loaded.
+  Future<void> _preloadAndSwitch(String url) async {
+    try {
+      await precacheImage(CachedNetworkImageProvider(url), context);
+      if (mounted && _pendingImageUrl == url) {
+        setState(() {
+          _displayedImageUrl = url;
+          _pendingImageUrl = null;
+        });
+      }
+    } catch (_) {
+      if (mounted && _pendingImageUrl == url) {
+        setState(() {
+          _displayedImageUrl = url;
+          _pendingImageUrl = null;
+        });
+      }
+    }
   }
 }

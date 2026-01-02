@@ -29,8 +29,8 @@ class LocaleNotifier extends Notifier<Locale> {
       (loc) => loc.languageCode == systemLocale.languageCode,
     );
 
-    // Default to Norwegian Bokmål if system locale isn't supported
-    return isSupported ? Locale(systemLocale.languageCode) : const Locale('nb');
+    // Default to Norwegian Nynorsk if system locale isn't supported
+    return isSupported ? Locale(systemLocale.languageCode) : const Locale('nn');
   }
 
   /// Set the locale.

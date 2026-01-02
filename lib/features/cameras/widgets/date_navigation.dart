@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:vesteraalen_timelapse/core/constants/app_constants.dart';
 import 'package:vesteraalen_timelapse/core/providers/locale_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/date_picker_provider.dart';
 import 'package:vesteraalen_timelapse/features/cameras/providers/timelapse_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
 
 /// Navigation bar for selecting timelapse dates.
+///
+/// Provides previous/next day navigation, date picker access, and today button.
+/// Automatically disables navigation buttons when at date boundaries.
 class DateNavigationBar extends ConsumerWidget {
   const DateNavigationBar({super.key});
 
@@ -18,10 +22,13 @@ class DateNavigationBar extends ConsumerWidget {
     final navigation = timelapseState.detail?.navigation;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,7 +38,7 @@ class DateNavigationBar extends ConsumerWidget {
             icon: const Icon(Icons.chevron_left),
             tooltip: l10n.previousDay,
             onPressed: navigation?.hasPrevious == true
-                ? () => _goToPreviousDay(ref, navigation!.previousDate!)
+                ? () => _navigateToDate(ref, navigation!.previousDate!)
                 : null,
           ),
 
@@ -39,9 +46,9 @@ class DateNavigationBar extends ConsumerWidget {
           Expanded(
             child: InkWell(
               onTap: () => _showDatePicker(context, ref, selectedDate),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -68,7 +75,7 @@ class DateNavigationBar extends ConsumerWidget {
             icon: const Icon(Icons.chevron_right),
             tooltip: l10n.nextDay,
             onPressed: navigation?.hasNext == true
-                ? () => _goToNextDay(ref, navigation!.nextDate!)
+                ? () => _navigateToDate(ref, navigation!.nextDate!)
                 : null,
           ),
 
@@ -83,12 +90,15 @@ class DateNavigationBar extends ConsumerWidget {
     );
   }
 
+  /// Formats a date as a short, context-aware label.
+  ///
+  /// Returns "Today" or "Yesterday" for those dates, day name for dates
+  /// within the past week, or abbreviated month/day for older dates.
   String _formatDateLabel(BuildContext context, DateTime date) {
     final l10n = AppLocalizations.of(context);
     if (date.isToday) return l10n.today;
     if (date.isYesterday) return l10n.yesterday;
 
-    // Return day name for dates within the past week
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
     if (difference < 7) {
@@ -99,19 +109,18 @@ class DateNavigationBar extends ConsumerWidget {
     return DateFormat.MMMd(LocaleUtils.getIntlLocale(context)).format(date);
   }
 
+  /// Formats a date as a full, locale-aware string (e.g., "January 1, 2026").
   String _formatFullDate(BuildContext context, DateTime date) {
     final locale = LocaleUtils.getIntlLocale(context);
     return DateFormat.yMMMMd(locale).format(date);
   }
 
-  void _goToPreviousDay(WidgetRef ref, DateTime date) {
+  /// Navigates to the specified date.
+  void _navigateToDate(WidgetRef ref, DateTime date) {
     ref.read(selectedDateProvider.notifier).state = date;
   }
 
-  void _goToNextDay(WidgetRef ref, DateTime date) {
-    ref.read(selectedDateProvider.notifier).state = date;
-  }
-
+  /// Navigates to today's date.
   void _goToToday(WidgetRef ref) {
     ref.read(selectedDateProvider.notifier).state = DateTime.now().dateOnly;
   }

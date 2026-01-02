@@ -21,17 +21,26 @@
 
 ## Memory Rules
 
-### Git Push Policy - CRITICAL
-**NEVER PUSH TO GITHUB UNLESS THE USER EXPLICITLY SAYS "PUSH".**
+### Git Commit/Push Policy - CRITICAL
+**NEVER COMMIT OR PUSH UNLESS THE USER EXPLICITLY TELLS YOU TO.**
 
 This is a hard rule with no exceptions:
+- Do NOT commit changes automatically
 - Do NOT push after committing
-- Do NOT push "for testing"
-- Do NOT push as part of a workflow
-- ONLY push when the user explicitly tells you to push
-- When in doubt, ASK before pushing
+- Do NOT commit/push "for testing"
+- Do NOT commit/push as part of a workflow
+- ONLY commit when the user explicitly says "commit"
+- ONLY push when the user explicitly says "push"
+- When in doubt, ASK before committing or pushing
 
-Commits are fine. Pushing requires explicit permission.
+Make changes to files, but wait for explicit permission to commit and push.
+
+### Code Quality Check - REQUIRED
+**After making any Dart/Flutter code changes, ALWAYS run `flutter analyze` before summarizing.**
+
+- If there are warnings or errors, fix them immediately
+- Only report changes as "ready" when analyze passes with no issues
+- This catches lint issues that `dart format` doesn't fix
 
 ### Daily Development Logs
 **IMPORTANT**: Create a new log file for every development day:
@@ -96,6 +105,7 @@ lib/
 ├── main.dart                           # App entry point
 ├── core/
 │   ├── config/env_config.dart          # Environment configuration
+│   ├── constants/app_constants.dart    # Centralized constants (spacing, dimensions, etc.)
 │   ├── theme/app_theme.dart            # Dark/light theme
 │   ├── providers/
 │   │   ├── theme_provider.dart         # Theme state
@@ -106,7 +116,8 @@ lib/
 │   │   ├── api_client.dart             # Dio HTTP client
 │   │   ├── cache_service.dart          # In-memory cache
 │   │   └── websocket_service.dart      # Laravel Reverb WebSocket client
-│   └── widgets/                        # Shared widgets
+│   └── widgets/
+│       └── image_preload_mixin.dart    # Seamless image preloading mixin
 ├── features/
 │   ├── cameras/
 │   │   ├── models/
@@ -319,6 +330,28 @@ version: 1.0.0+1
 ---
 
 ## Recent Changes
+
+### 2026-01-02 (continued)
+- **Comprehensive code cleanup and optimization**:
+  - Created `lib/core/constants/app_constants.dart` with centralized constants:
+    - `AppSpacing`: xs, sm, md, lg, xl, xxl spacing values
+    - `AppDimensions`: icon sizes, breakpoints, border radii
+    - `ApiEndpoints`: API path templates
+    - `CacheKeys`: Cache key patterns
+    - `AppDurations`: Timeouts and animation durations
+    - `AppStatusColors`: Status indicator colors
+  - Created `lib/core/widgets/image_preload_mixin.dart` for seamless image transitions
+  - Merged duplicate navigation methods in `date_navigation.dart`
+  - Consolidated date formatting to use `toApiFormat()` extension consistently
+  - Added dartdoc comments to all public classes and complex methods
+  - Updated all UI files to use centralized constants instead of magic numbers
+  - Added API response validation before type casting
+- **Image update timestamp**: Shows relative time since last image update on camera cards
+- **Green flash animation**: Clock icon flashes green when camera image updates
+- **Seamless image transitions**: Preloads new images before displaying (no flickering)
+- **Default language**: Set Nynorsk (nn) as default language
+- **Minimum iOS version**: Set to iOS 15.0
+- Version bumped to 1.5.0
 
 ### 2026-01-02
 - **WebSocket real-time updates**: Integrated with Laravel Reverb
