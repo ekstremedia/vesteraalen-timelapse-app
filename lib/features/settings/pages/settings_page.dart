@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vesteraalen_timelapse/core/providers/theme_provider.dart';
 import 'package:vesteraalen_timelapse/core/providers/locale_provider.dart';
+import 'package:vesteraalen_timelapse/core/providers/websocket_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,6 +16,7 @@ class SettingsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
+    final wsConnection = ref.watch(webSocketConnectionProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -37,6 +39,7 @@ class SettingsPage extends ConsumerWidget {
           const Divider(),
           _buildVersionTile(context, l10n),
           _buildWebsiteTile(context, l10n),
+          _buildWebSocketTile(context, wsConnection),
         ],
       ),
     );
@@ -269,5 +272,38 @@ class SettingsPage extends ConsumerWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  Widget _buildWebSocketTile(
+    BuildContext context,
+    AsyncValue<bool?> connectionState,
+  ) {
+    final statusText = connectionState.when(
+      data: (isConnected) {
+        if (isConnected == null) return 'Disabled';
+        return isConnected ? 'Connected' : 'Disconnected';
+      },
+      loading: () => 'Connecting...',
+      error: (_, _) => 'Error',
+    );
+
+    final statusColor = connectionState.when(
+      data: (isConnected) {
+        if (isConnected == null) return Colors.grey;
+        return isConnected ? Colors.green : Colors.red;
+      },
+      loading: () => Colors.orange,
+      error: (_, _) => Colors.red,
+    );
+
+    return ListTile(
+      leading: Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: statusColor),
+      ),
+      title: const Text('WebSocket'),
+      subtitle: Text(statusText),
+    );
   }
 }
