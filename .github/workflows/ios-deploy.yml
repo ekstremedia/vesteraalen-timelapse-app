@@ -33,6 +33,16 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods/repos
+            ios/Pods
+          key: cocoapods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            cocoapods-${{ runner.os }}-
+
       - name: Create .env file
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
@@ -62,7 +72,19 @@ jobs:
           sed -i '' "s/version: \(.*\)+.*/version: \1+$BUILD_NUMBER/" pubspec.yaml
 
       - name: Build iOS
-        run: flutter build ios --release --no-codesign
+        run: |
+          # Retry up to 3 times for transient network issues (CocoaPods CDN)
+          for i in 1 2 3; do
+            echo "Attempt $i of 3..."
+            if flutter build ios --release --no-codesign; then
+              echo "Build succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed, waiting 30 seconds..."
+            sleep 30
+          done
+          echo "All attempts failed"
+          exit 1
 
       - name: Build Archive
         run: |
