@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vesteraalen_timelapse/features/cameras/models/camera.dart';
+import 'package:vesteraalen_timelapse/features/cameras/providers/cameras_provider.dart';
 import 'package:vesteraalen_timelapse/l10n/app_localizations.dart';
 
 /// A card widget displaying camera information and current image.
@@ -152,28 +154,56 @@ class CameraCard extends StatelessWidget {
   }
 
   void _showImageFullscreen(BuildContext context, Camera camera) {
-    final theme = Theme.of(context);
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text(camera.name),
-            backgroundColor: theme.scaffoldBackgroundColor,
-          ),
-          backgroundColor: theme.scaffoldBackgroundColor,
-          body: InteractiveViewer(
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: Center(
-              child: CachedNetworkImage(
-                imageUrl: camera.currentImageUrl!,
-                fit: BoxFit.contain,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.broken_image, color: Colors.white),
-              ),
-            ),
+        builder: (context) => _FullscreenImageViewer(cameraId: camera.cameraId),
+      ),
+    );
+  }
+}
+
+/// Fullscreen image viewer that updates with polling and WebSocket.
+class _FullscreenImageViewer extends ConsumerWidget {
+  final String cameraId;
+
+  const _FullscreenImageViewer({required this.cameraId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final camerasState = ref.watch(camerasProvider);
+
+    // Find the camera by ID
+    final camera = camerasState.cameras
+        .where((c) => c.cameraId == cameraId)
+        .firstOrNull;
+
+    if (camera == null || !camera.hasCurrentImage) {
+      return Scaffold(
+        appBar: AppBar(backgroundColor: theme.scaffoldBackgroundColor),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: const Center(child: Icon(Icons.broken_image, size: 64)),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(camera.name),
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: InteractiveViewer(
+        minScale: 0.5,
+        maxScale: 4.0,
+        child: Center(
+          child: CachedNetworkImage(
+            imageUrl: camera.currentImageUrl!,
+            fit: BoxFit.contain,
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) =>
+                const Icon(Icons.broken_image, color: Colors.white),
           ),
         ),
       ),
