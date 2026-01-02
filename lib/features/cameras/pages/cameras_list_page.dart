@@ -116,9 +116,11 @@ class CamerasListPage extends ConsumerWidget {
       slivers: [
         // Camera grid (no loading indicator for silent background updates)
         SliverPadding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+          padding: const EdgeInsets.only(
+            left: AppSpacing.sm,
+            right: AppSpacing.sm,
+            top: AppSpacing.xs,
+            bottom: AppSpacing.sm,
           ),
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

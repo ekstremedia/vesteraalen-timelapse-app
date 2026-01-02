@@ -90,7 +90,10 @@ class _CameraCardState extends State<CameraCard>
 
           // Camera info and timelapse button
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -212,60 +215,54 @@ class _CameraCardState extends State<CameraCard>
       );
     }
 
-    return Container(
-      color: theme.colorScheme.surfaceContainerHighest,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Previous image (shown underneath during transition)
-          if (previousImageUrl != null)
-            CachedNetworkImage(
-              imageUrl: previousImageUrl!,
-              fit: BoxFit.contain,
-              placeholder: (context, url) => const SizedBox.shrink(),
-              fadeInDuration: Duration.zero,
-              fadeOutDuration: Duration.zero,
-              memCacheWidth: AppDimensions.imageCacheWidth,
-              errorWidget: (context, url, error) => const SizedBox.shrink(),
-            ),
-          // Current image (on top)
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Previous image (shown underneath during transition)
+        if (previousImageUrl != null)
           CachedNetworkImage(
-            imageUrl: displayedImageUrl!,
+            imageUrl: previousImageUrl!,
             fit: BoxFit.contain,
             placeholder: (context, url) => const SizedBox.shrink(),
             fadeInDuration: Duration.zero,
             fadeOutDuration: Duration.zero,
             memCacheWidth: AppDimensions.imageCacheWidth,
-            errorWidget: (context, url, error) => Container(
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: Center(
-                child: Icon(
-                  Icons.broken_image_outlined,
-                  size: AppDimensions.iconXl,
-                  color: theme.colorScheme.error,
-                ),
-              ),
+            errorWidget: (context, url, error) => const SizedBox.shrink(),
+          ),
+        // Current image (on top)
+        CachedNetworkImage(
+          imageUrl: displayedImageUrl!,
+          fit: BoxFit.contain,
+          placeholder: (context, url) => const SizedBox.shrink(),
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
+          memCacheWidth: AppDimensions.imageCacheWidth,
+          errorWidget: (context, url, error) => Center(
+            child: Icon(
+              Icons.broken_image_outlined,
+              size: AppDimensions.iconXl,
+              color: theme.colorScheme.error,
             ),
           ),
-          // Zoom hint icon
-          Positioned(
-            top: AppSpacing.sm,
-            right: AppSpacing.sm,
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.xs),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-              ),
-              child: const Icon(
-                Icons.zoom_in,
-                color: Colors.white,
-                size: AppDimensions.iconLg,
-              ),
+        ),
+        // Zoom hint icon
+        Positioned(
+          top: AppSpacing.sm,
+          right: AppSpacing.sm,
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.xs),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+            ),
+            child: const Icon(
+              Icons.zoom_in,
+              color: Colors.white,
+              size: AppDimensions.iconLg,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
