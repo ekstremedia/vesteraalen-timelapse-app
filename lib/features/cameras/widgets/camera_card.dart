@@ -107,7 +107,7 @@ class _CameraCardState extends State<CameraCard>
 
                 const SizedBox(height: AppSpacing.xs),
 
-                // Location or video count
+                // Location/video count and time ago in one row
                 Row(
                   children: [
                     Icon(
@@ -118,7 +118,7 @@ class _CameraCardState extends State<CameraCard>
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    Expanded(
+                    Flexible(
                       child: Text(
                         camera.location ?? l10n.videoCount(camera.videoCount),
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -128,46 +128,47 @@ class _CameraCardState extends State<CameraCard>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                ),
-
-                // Image updated time with animated clock icon
-                if (camera.currentImageUpdatedAt != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Row(
-                      children: [
-                        AnimatedBuilder(
-                          animation: _flashController,
-                          builder: (context, child) {
-                            final curvedValue = Curves.easeInOut.transform(
-                              _flashController.value,
-                            );
-                            final normalColor =
-                                theme.colorScheme.onSurfaceVariant;
-                            return Icon(
-                              Icons.access_time,
-                              size: AppDimensions.iconSm,
-                              color: Color.lerp(
-                                normalColor,
-                                AppStatusColors.connected,
-                                curvedValue,
-                              ),
-                            );
-                          },
+                    if (camera.currentImageUpdatedAt != null) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xs,
                         ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          l10n.formatRelativeTime(
-                            camera.currentImageUpdatedAt!,
-                          ),
+                        child: Text(
+                          '•',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                      AnimatedBuilder(
+                        animation: _flashController,
+                        builder: (context, child) {
+                          final curvedValue = Curves.easeInOut.transform(
+                            _flashController.value,
+                          );
+                          final normalColor =
+                              theme.colorScheme.onSurfaceVariant;
+                          return Icon(
+                            Icons.access_time,
+                            size: AppDimensions.iconSm,
+                            color: Color.lerp(
+                              normalColor,
+                              AppStatusColors.connected,
+                              curvedValue,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        l10n.formatRelativeTime(camera.currentImageUpdatedAt!),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
 
                 const SizedBox(height: AppSpacing.sm),
 

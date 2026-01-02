@@ -116,12 +116,15 @@ class CamerasListPage extends ConsumerWidget {
       slivers: [
         // Camera grid (no loading indicator for silent background updates)
         SliverPadding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: AppSpacing.lg,
-              crossAxisSpacing: AppSpacing.lg,
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.md,
               childAspectRatio: _calculateChildAspectRatio(crossAxisCount),
             ),
             delegate: SliverChildBuilderDelegate((context, index) {
@@ -146,16 +149,16 @@ class CamerasListPage extends ConsumerWidget {
   /// Calculate aspect ratio based on number of columns.
   double _calculateChildAspectRatio(int crossAxisCount) {
     // More columns = wider cards, adjust ratio
-    // Reduced ratios to accommodate the timelapse button
+    // Balance between image space and fitting cards on screen
     switch (crossAxisCount) {
       case 1:
-        return 1.1; // Taller on phone
+        return 0.95; // Fit 2 cards on phone screen
       case 2:
-        return 0.9;
+        return 0.8;
       case 3:
-        return 0.85;
+        return 0.7;
       default:
-        return 0.75; // More square on large screens
+        return 0.6;
     }
   }
 
