@@ -21,6 +21,9 @@
 
 ## Memory Rules
 
+### Git Push Policy
+**IMPORTANT**: NEVER push to GitHub unless the user explicitly tells you to. Always wait for explicit permission before running `git push`.
+
 ### Daily Development Logs
 **IMPORTANT**: Create a new log file for every development day:
 - Location: `/www/Vesterålen_timelapse/logs/YYYY-MM-DD.md`
