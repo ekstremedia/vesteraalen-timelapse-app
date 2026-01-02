@@ -88,10 +88,12 @@ lib/
 │   ├── providers/
 │   │   ├── theme_provider.dart         # Theme state
 │   │   ├── locale_provider.dart        # Locale state
+│   │   ├── websocket_provider.dart     # WebSocket connection state
 │   │   └── shared_preferences_provider.dart
 │   ├── services/
 │   │   ├── api_client.dart             # Dio HTTP client
-│   │   └── cache_service.dart          # In-memory cache
+│   │   ├── cache_service.dart          # In-memory cache
+│   │   └── websocket_service.dart      # Laravel Reverb WebSocket client
 │   └── widgets/                        # Shared widgets
 ├── features/
 │   ├── cameras/
@@ -169,6 +171,27 @@ DateFormat.yMMMd(LocaleUtils.getIntlLocale(context)).format(date);
 | Today's timelapse | 30s | May still be processing |
 | Historical timelapse | 5 min | Won't change |
 | Available dates | 1 hour | Changes once daily |
+
+### WebSocket (Laravel Reverb)
+
+```dart
+// WebSocket connects to Reverb server using Pusher protocol
+// Subscribes to 'cameras' channel for real-time image updates
+
+// Event received from Laravel:
+// Channel: cameras
+// Event: .image.updated
+// Payload: {camera_id, camera_name, image_url, updated_at}
+```
+
+**Environment Variables:**
+```bash
+WEBSOCKET_ENABLED=true
+REVERB_HOST=nesthus.no
+REVERB_PORT=8080
+REVERB_SCHEME=https
+REVERB_APP_KEY=your-app-key
+```
 
 ---
 
@@ -273,15 +296,38 @@ version: 1.0.0+1
 | YouTube player | ✅ Done | Embedded timelapse playback |
 | Dark/light theme | ✅ Done | Matches website |
 | Localization (nb/nn/en) | ✅ Done | 3 languages |
-| Settings page | ✅ Done | Theme + language + about section |
+| Settings page | ✅ Done | Theme + language + about + WebSocket status |
+| WebSocket real-time updates | ✅ Done | Laravel Reverb integration |
+| Silent image refresh | ✅ Done | No loading indicators on background refresh |
 | CI/CD Android | ✅ Done | GitHub Actions + Firebase App Distribution |
-| CI/CD iOS | 🔄 In Progress | GitHub Actions + TestFlight (upload pending) |
+| CI/CD iOS | ✅ Done | GitHub Actions + TestFlight |
 | Google Play Store | 🔲 Pending | Internal testing track |
-| Apple App Store | 🔄 In Progress | App created, TestFlight pending |
+| Apple App Store | 🔄 In Progress | TestFlight builds working |
 
 ---
 
 ## Recent Changes
+
+### 2026-01-02
+- **WebSocket real-time updates**: Integrated with Laravel Reverb
+  - Created `WebSocketService` using Pusher protocol
+  - Subscribes to `cameras` channel for `.image.updated` events
+  - Auto-reconnect with exponential backoff
+  - Ping/pong keepalive
+- **App lifecycle management**: Added `WidgetsBindingObserver`
+  - Reconnects WebSocket on app resume
+  - Stops polling on app pause
+  - Silent data refresh on foreground
+- **Silent image updates**: No loading indicators during background refresh
+  - Zero fade duration for instant image transitions
+  - Empty placeholder instead of spinner
+- **WebSocket status in Settings**: Shows connection state with colored indicator
+- **CI/CD fixes**:
+  - Fixed Android deploy to trigger on push to main (was only on tags)
+  - Added WebSocket environment variables to both workflows
+  - Added `REVERB_APP_KEY` secret
+- **iOS encryption exemption**: Added `ITSAppUsesNonExemptEncryption` to Info.plist
+- Version bumped to 1.3.0
 
 ### 2026-01-01
 - Set up Firebase project (Android + iOS apps)
