@@ -37,6 +37,11 @@ jobs:
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
           echo "POLLING_INTERVAL=${{ vars.POLLING_INTERVAL || '60' }}" >> .env
+          echo "WEBSOCKET_ENABLED=true" >> .env
+          echo "REVERB_HOST=nesthus.no" >> .env
+          echo "REVERB_PORT=8080" >> .env
+          echo "REVERB_SCHEME=https" >> .env
+          echo "REVERB_APP_KEY=${{ secrets.REVERB_APP_KEY }}" >> .env
 
       - name: Install Apple Certificate
         uses: apple-actions/import-codesign-certs@v2
