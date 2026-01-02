@@ -175,6 +175,25 @@ Create `.env` (gitignored):
 API_BASE_URL=https://your-api.com
 ```
 
+### WebSocket Configuration (Laravel Reverb)
+
+If using real-time updates with Laravel Reverb, add to `.env`:
+```bash
+WEBSOCKET_ENABLED=true
+REVERB_HOST=your-domain.com
+REVERB_PORT=8080
+REVERB_SCHEME=https
+REVERB_APP_KEY=your-reverb-app-key
+```
+
+Add `web_socket_channel` to `pubspec.yaml`:
+```yaml
+dependencies:
+  web_socket_channel: ^3.0.2
+```
+
+**CI/CD Note:** Add `REVERB_APP_KEY` as a GitHub secret and include WebSocket env vars in your deploy workflows.
+
 ### .gitignore Additions
 
 ```gitignore
@@ -398,6 +417,15 @@ If using non-HTTPS APIs, edit `ios/Runner/Info.plist`:
     <true/>
 </dict>
 ```
+
+### Skip Encryption Compliance Questions
+
+If your app doesn't use custom encryption (only standard HTTPS), add to `ios/Runner/Info.plist`:
+```xml
+<key>ITSAppUsesNonExemptEncryption</key>
+<false/>
+```
+This prevents Apple from asking encryption compliance questions on each TestFlight submission.
 
 ### iOS Code Signing for CI/CD (GitHub Actions)
 
@@ -741,15 +769,23 @@ jobs:
         id: find-ipa
         run: |
           IPA_PATH=$(find ios/export -name "*.ipa" -type f | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "ERROR: No IPA file found"
+            exit 1
+          fi
           echo "IPA_PATH=$IPA_PATH" >> $GITHUB_OUTPUT
 
       - name: Upload to TestFlight
-        uses: apple-actions/upload-testflight-build@v1
-        with:
-          app-path: ${{ steps.find-ipa.outputs.IPA_PATH }}
-          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        env:
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          xcrun altool --upload-app \
+            --type ios \
+            --file "${{ steps.find-ipa.outputs.IPA_PATH }}" \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
 ```
 
 **Key Points:**
@@ -757,6 +793,8 @@ jobs:
 - Sign during export using `ExportOptions.plist`
 - Use `app-store` method (not `app-store-connect`) to avoid auth issues
 - Find IPA dynamically (may not be named `Runner.ipa`)
+- Use `xcrun altool` for upload (more reliable than GitHub actions)
+- Store API key at `~/.appstoreconnect/private_keys/AuthKey_KEYID.p8`
 
 ### Xcode Cloud Setup (Alternative)
 
@@ -931,6 +969,8 @@ Builds appear in App Store Connect automatically:
 | `withValues()` not defined | Use `withOpacity()` instead (older Flutter) |
 | CI uses wrong Flutter version | Specify exact version + remove `cache: true` |
 | Dart format fails in CI | Add pre-commit hook to auto-format |
+| Android deploy not running | Check trigger: use `branches: [main]` not `tags: ['v*']` |
+| TestFlight upload fails | Use `xcrun altool` instead of GitHub actions |
 
 ### Useful Commands
 
@@ -963,4 +1003,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2026-01-01 (iOS deployment added)*
+*Last updated: 2026-01-02 (WebSocket config, encryption exemption, xcrun altool for TestFlight)*
