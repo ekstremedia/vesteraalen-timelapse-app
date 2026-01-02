@@ -76,6 +76,30 @@ class CameraCard extends StatelessWidget {
                   ],
                 ),
 
+                // Image updated time
+                if (camera.currentImageUpdatedAt != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.formatRelativeTime(
+                            camera.currentImageUpdatedAt!,
+                          ),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 const SizedBox(height: 8),
 
                 // See timelapse button

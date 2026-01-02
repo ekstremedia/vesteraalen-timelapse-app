@@ -39,7 +39,7 @@ class SettingsPage extends ConsumerWidget {
           const Divider(),
           _buildVersionTile(context, l10n),
           _buildWebsiteTile(context, l10n),
-          _buildWebSocketTile(context, wsConnection),
+          _buildWebSocketTile(context, l10n, wsConnection),
         ],
       ),
     );
@@ -276,15 +276,16 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildWebSocketTile(
     BuildContext context,
+    AppLocalizations l10n,
     AsyncValue<bool?> connectionState,
   ) {
     final statusText = connectionState.when(
       data: (isConnected) {
-        if (isConnected == null) return 'Disabled';
-        return isConnected ? 'Connected' : 'Disconnected';
+        if (isConnected == null) return l10n.wsDisabled;
+        return isConnected ? l10n.wsConnected : l10n.wsDisconnected;
       },
-      loading: () => 'Connecting...',
-      error: (_, _) => 'Error',
+      loading: () => l10n.wsConnecting,
+      error: (_, __) => l10n.wsError,
     );
 
     final statusColor = connectionState.when(
@@ -293,7 +294,7 @@ class SettingsPage extends ConsumerWidget {
         return isConnected ? Colors.green : Colors.red;
       },
       loading: () => Colors.orange,
-      error: (_, _) => Colors.red,
+      error: (_, __) => Colors.red,
     );
 
     return ListTile(
@@ -302,7 +303,7 @@ class SettingsPage extends ConsumerWidget {
         height: 12,
         decoration: BoxDecoration(shape: BoxShape.circle, color: statusColor),
       ),
-      title: const Text('WebSocket'),
+      title: Text(l10n.webSocketConnection),
       subtitle: Text(statusText),
     );
   }

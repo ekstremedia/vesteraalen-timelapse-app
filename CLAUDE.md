@@ -21,8 +21,17 @@
 
 ## Memory Rules
 
-### Git Push Policy
-**IMPORTANT**: NEVER push to GitHub unless the user explicitly tells you to. Always wait for explicit permission before running `git push`.
+### Git Push Policy - CRITICAL
+**NEVER PUSH TO GITHUB UNLESS THE USER EXPLICITLY SAYS "PUSH".**
+
+This is a hard rule with no exceptions:
+- Do NOT push after committing
+- Do NOT push "for testing"
+- Do NOT push as part of a workflow
+- ONLY push when the user explicitly tells you to push
+- When in doubt, ASK before pushing
+
+Commits are fine. Pushing requires explicit permission.
 
 ### Daily Development Logs
 **IMPORTANT**: Create a new log file for every development day:

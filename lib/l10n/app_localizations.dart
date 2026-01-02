@@ -86,6 +86,12 @@ class AppLocalizations {
       'openSourceDesc':
           'The timelapse software is built with Python and is open source',
       'viewOnGithub': 'View on GitHub',
+      'webSocketConnection': 'Live updates',
+      'wsConnected': 'Connected',
+      'wsDisconnected': 'Disconnected',
+      'wsConnecting': 'Connecting...',
+      'wsDisabled': 'Disabled',
+      'wsError': 'Error',
 
       // General
       'loading': 'Loading...',
@@ -164,6 +170,12 @@ class AppLocalizations {
       'openSourceDesc':
           'Timelapse-programvaren er bygget med Python og er åpen kildekode',
       'viewOnGithub': 'Se på GitHub',
+      'webSocketConnection': 'Direkteoppdateringer',
+      'wsConnected': 'Tilkoblet',
+      'wsDisconnected': 'Frakoblet',
+      'wsConnecting': 'Kobler til...',
+      'wsDisabled': 'Deaktivert',
+      'wsError': 'Feil',
 
       // General
       'loading': 'Laster...',
@@ -242,6 +254,12 @@ class AppLocalizations {
       'openSourceDesc':
           'Timelapse-programvara er bygd med Python og er open kjeldekode',
       'viewOnGithub': 'Sjå på GitHub',
+      'webSocketConnection': 'Direkteoppdateringar',
+      'wsConnected': 'Tilkopla',
+      'wsDisconnected': 'Fråkopla',
+      'wsConnecting': 'Koplar til...',
+      'wsDisabled': 'Deaktivert',
+      'wsError': 'Feil',
 
       // General
       'loading': 'Lastar...',
@@ -328,6 +346,12 @@ class AppLocalizations {
   String get openSource => _get('openSource');
   String get openSourceDesc => _get('openSourceDesc');
   String get viewOnGithub => _get('viewOnGithub');
+  String get webSocketConnection => _get('webSocketConnection');
+  String get wsConnected => _get('wsConnected');
+  String get wsDisconnected => _get('wsDisconnected');
+  String get wsConnecting => _get('wsConnecting');
+  String get wsDisabled => _get('wsDisabled');
+  String get wsError => _get('wsError');
 
   // General
   String get loading => _get('loading');
