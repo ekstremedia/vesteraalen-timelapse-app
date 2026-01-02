@@ -89,7 +89,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceContainerDark,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(color: primaryColor.withOpacity(0.2)),
@@ -179,7 +179,7 @@ class AppTheme {
         color: surfaceContainerLight,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.08),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         clipBehavior: Clip.antiAlias,
       ),
       dividerTheme: DividerThemeData(

@@ -192,6 +192,9 @@ class _CameraCardState extends State<CameraCard>
   }
 
   /// Builds the camera image with placeholder and error handling.
+  ///
+  /// Uses a Stack to show both previous and current images during transitions,
+  /// preventing any flickering when images update.
   Widget _buildImage(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -208,46 +211,60 @@ class _CameraCardState extends State<CameraCard>
       );
     }
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        CachedNetworkImage(
-          imageUrl: displayedImageUrl!,
-          fit: BoxFit.cover,
-          // No placeholder needed - we preload before switching URLs
-          placeholder: (context, url) => const SizedBox.shrink(),
-          fadeInDuration: Duration.zero,
-          fadeOutDuration: Duration.zero,
-          memCacheWidth: AppDimensions.imageCacheWidth,
-          errorWidget: (context, url, error) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Center(
-              child: Icon(
-                Icons.broken_image_outlined,
-                size: AppDimensions.iconXl,
-                color: theme.colorScheme.error,
+    return Container(
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Previous image (shown underneath during transition)
+          if (previousImageUrl != null)
+            CachedNetworkImage(
+              imageUrl: previousImageUrl!,
+              fit: BoxFit.contain,
+              placeholder: (context, url) => const SizedBox.shrink(),
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero,
+              memCacheWidth: AppDimensions.imageCacheWidth,
+              errorWidget: (context, url, error) => const SizedBox.shrink(),
+            ),
+          // Current image (on top)
+          CachedNetworkImage(
+            imageUrl: displayedImageUrl!,
+            fit: BoxFit.contain,
+            placeholder: (context, url) => const SizedBox.shrink(),
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
+            memCacheWidth: AppDimensions.imageCacheWidth,
+            errorWidget: (context, url, error) => Container(
+              color: theme.colorScheme.surfaceContainerHighest,
+              child: Center(
+                child: Icon(
+                  Icons.broken_image_outlined,
+                  size: AppDimensions.iconXl,
+                  color: theme.colorScheme.error,
+                ),
               ),
             ),
           ),
-        ),
-        // Zoom hint icon
-        Positioned(
-          top: AppSpacing.sm,
-          right: AppSpacing.sm,
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.xs),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-            ),
-            child: const Icon(
-              Icons.zoom_in,
-              color: Colors.white,
-              size: AppDimensions.iconLg,
+          // Zoom hint icon
+          Positioned(
+            top: AppSpacing.sm,
+            right: AppSpacing.sm,
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+              ),
+              child: const Icon(
+                Icons.zoom_in,
+                color: Colors.white,
+                size: AppDimensions.iconLg,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
