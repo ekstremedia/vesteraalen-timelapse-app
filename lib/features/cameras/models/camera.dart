@@ -89,6 +89,19 @@ class Camera {
   bool get hasCurrentImage =>
       currentImageUrl != null && currentImageUrl!.isNotEmpty;
 
+  /// Returns the current image URL with a cache-busting timestamp.
+  ///
+  /// This ensures that CachedNetworkImage fetches fresh images when
+  /// the server image updates, instead of serving stale disk-cached versions.
+  String? get currentImageUrlWithCacheBuster {
+    if (currentImageUrl == null) return null;
+    if (currentImageUpdatedAt == null) return currentImageUrl;
+
+    final timestamp = currentImageUpdatedAt!.millisecondsSinceEpoch;
+    final separator = currentImageUrl!.contains('?') ? '&' : '?';
+    return '$currentImageUrl${separator}t=$timestamp';
+  }
+
   /// Check if camera has any timelapse videos.
   bool get hasVideos => videoCount > 0;
 

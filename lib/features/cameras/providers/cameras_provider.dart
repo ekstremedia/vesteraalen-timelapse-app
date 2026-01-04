@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vesteraalen_timelapse/core/config/env_config.dart';
 import 'package:vesteraalen_timelapse/core/providers/websocket_provider.dart';
@@ -172,8 +173,13 @@ class CamerasNotifier extends Notifier<CamerasState> {
     }
   }
 
-  /// Force refresh cameras from the API.
-  Future<void> refresh() => loadCameras(forceRefresh: true);
+  /// Force refresh cameras from the API and clear image cache.
+  Future<void> refresh() async {
+    // Clear the disk image cache to ensure fresh images are fetched
+    await DefaultCacheManager().emptyCache();
+
+    return loadCameras(forceRefresh: true);
+  }
 
   /// Update a single camera in the list (e.g., from WebSocket event).
   void updateCamera(Camera updatedCamera) {

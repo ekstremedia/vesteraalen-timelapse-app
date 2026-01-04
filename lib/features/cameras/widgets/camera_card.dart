@@ -38,7 +38,7 @@ class _CameraCardState extends State<CameraCard>
   @override
   void initState() {
     super.initState();
-    initializeDisplayedUrl(camera.currentImageUrl);
+    initializeDisplayedUrl(camera.currentImageUrlWithCacheBuster);
 
     // Animation controller for clock icon flash (normal → green → normal)
     _flashController = AnimationController(
@@ -56,7 +56,7 @@ class _CameraCardState extends State<CameraCard>
   @override
   void didUpdateWidget(CameraCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    handleUrlChange(camera.currentImageUrl);
+    handleUrlChange(camera.currentImageUrlWithCacheBuster);
   }
 
   @override
@@ -114,26 +114,19 @@ class _CameraCardState extends State<CameraCard>
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
-                          // Location/video count and time ago
+                          // Video count and time ago
                           Row(
                             children: [
                               Icon(
-                                camera.location != null
-                                    ? Icons.location_on_outlined
-                                    : Icons.video_library_outlined,
+                                Icons.video_library_outlined,
                                 size: AppDimensions.iconSm,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 2),
-                              Flexible(
-                                child: Text(
-                                  camera.location ??
-                                      l10n.videoCount(camera.videoCount),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                              Text(
+                                l10n.videoCount(camera.videoCount),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               if (camera.currentImageUpdatedAt != null) ...[
@@ -303,7 +296,7 @@ class _FullscreenImageViewerState
     final camera = camerasState.cameras
         .where((c) => c.cameraId == widget.cameraId)
         .firstOrNull;
-    _displayedImageUrl = camera?.currentImageUrl;
+    _displayedImageUrl = camera?.currentImageUrlWithCacheBuster;
   }
 
   @override
@@ -317,7 +310,7 @@ class _FullscreenImageViewerState
         .firstOrNull;
 
     // Check for new image URL and preload
-    final newUrl = camera?.currentImageUrl;
+    final newUrl = camera?.currentImageUrlWithCacheBuster;
     if (newUrl != null &&
         newUrl != _displayedImageUrl &&
         newUrl != _pendingImageUrl) {
