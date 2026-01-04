@@ -2,7 +2,7 @@ name: vesteraalen_timelapse
 description: "Live camera images and timelapses from Northern Norway"
 publish_to: 'none'
 
-version: 1.6.1+1
+version: 1.7.0+1
 
 environment:
   sdk: ^3.8.0
