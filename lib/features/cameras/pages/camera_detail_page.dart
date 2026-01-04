@@ -278,6 +278,9 @@ class CameraDetailPage extends ConsumerWidget {
     if (video.keogramUrl != null) {
       images.add(MapEntry(l10n.keogram, video.keogramUrl!));
     }
+    if (video.slitscanUrl != null) {
+      images.add(MapEntry(l10n.slitscan, video.slitscanUrl!));
+    }
 
     return GridView.builder(
       shrinkWrap: true,

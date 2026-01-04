@@ -15,6 +15,7 @@ void main() {
         'daytime_url': 'https://example.com/daytime.jpg',
         'night_url': 'https://example.com/night.jpg',
         'keogram_url': 'https://example.com/keogram.jpg',
+        'slitscan_url': 'https://example.com/slitscan.jpg',
       };
 
       final video = TimelapseVideo.fromJson(json);
@@ -30,6 +31,7 @@ void main() {
       expect(video.daytimeUrl, 'https://example.com/daytime.jpg');
       expect(video.nightUrl, 'https://example.com/night.jpg');
       expect(video.keogramUrl, 'https://example.com/keogram.jpg');
+      expect(video.slitscanUrl, 'https://example.com/slitscan.jpg');
     });
 
     test('fromJson handles nullable fields', () {
@@ -43,6 +45,7 @@ void main() {
         'daytime_url': null,
         'night_url': null,
         'keogram_url': null,
+        'slitscan_url': null,
       };
 
       final video = TimelapseVideo.fromJson(json);
@@ -50,6 +53,7 @@ void main() {
       expect(video.title, isNull);
       expect(video.youtubeId, isNull);
       expect(video.videoUrl, isNull);
+      expect(video.slitscanUrl, isNull);
     });
 
     test('toJson produces valid JSON', () {
@@ -173,8 +177,15 @@ void main() {
         keogramUrl: 'https://example.com/keogram.jpg',
       );
 
-      final videoWithNoImages = TimelapseVideo(
+      final videoWithSlitscan = TimelapseVideo(
         id: 4,
+        cameraId: 'test',
+        date: DateTime.now(),
+        slitscanUrl: 'https://example.com/slitscan.jpg',
+      );
+
+      final videoWithNoImages = TimelapseVideo(
+        id: 5,
         cameraId: 'test',
         date: DateTime.now(),
       );
@@ -182,7 +193,35 @@ void main() {
       expect(videoWithDaytime.hasImages, true);
       expect(videoWithNight.hasImages, true);
       expect(videoWithKeogram.hasImages, true);
+      expect(videoWithSlitscan.hasImages, true);
       expect(videoWithNoImages.hasImages, false);
+    });
+
+    test('hasSlitscan returns correct value', () {
+      final videoWithSlitscan = TimelapseVideo(
+        id: 1,
+        cameraId: 'test',
+        date: DateTime.now(),
+        slitscanUrl: 'https://example.com/slitscan.jpg',
+      );
+
+      final videoWithoutSlitscan = TimelapseVideo(
+        id: 2,
+        cameraId: 'test',
+        date: DateTime.now(),
+        slitscanUrl: null,
+      );
+
+      final videoWithEmptySlitscan = TimelapseVideo(
+        id: 3,
+        cameraId: 'test',
+        date: DateTime.now(),
+        slitscanUrl: '',
+      );
+
+      expect(videoWithSlitscan.hasSlitscan, true);
+      expect(videoWithoutSlitscan.hasSlitscan, false);
+      expect(videoWithEmptySlitscan.hasSlitscan, false);
     });
 
     test('copyWith creates a modified copy', () {

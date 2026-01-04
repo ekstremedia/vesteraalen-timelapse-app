@@ -54,6 +54,7 @@ class AppLocalizations {
       'daytime': 'Daytime',
       'evening': 'Evening',
       'keogram': 'Keogram',
+      'slitscan': 'Slitscan',
       'watchOnYoutube': 'Watch on YouTube',
 
       // Date navigation
@@ -138,6 +139,7 @@ class AppLocalizations {
       'daytime': 'Dag',
       'evening': 'Kveld',
       'keogram': 'Keogram',
+      'slitscan': 'Slitscan',
       'watchOnYoutube': 'Se på YouTube',
 
       // Date navigation
@@ -222,6 +224,7 @@ class AppLocalizations {
       'daytime': 'Dag',
       'evening': 'Kveld',
       'keogram': 'Keogram',
+      'slitscan': 'Slitscan',
       'watchOnYoutube': 'Sjå på YouTube',
 
       // Date navigation
@@ -315,6 +318,7 @@ class AppLocalizations {
   String get daytime => _get('daytime');
   String get evening => _get('evening');
   String get keogram => _get('keogram');
+  String get slitscan => _get('slitscan');
   String get watchOnYoutube => _get('watchOnYoutube');
 
   // Date navigation

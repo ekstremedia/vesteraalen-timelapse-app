@@ -15,6 +15,7 @@ class TimelapseVideo {
   final String? daytimeUrl;
   final String? nightUrl;
   final String? keogramUrl;
+  final String? slitscanUrl;
 
   const TimelapseVideo({
     required this.id,
@@ -27,6 +28,7 @@ class TimelapseVideo {
     this.daytimeUrl,
     this.nightUrl,
     this.keogramUrl,
+    this.slitscanUrl,
   });
 
   /// Create a TimelapseVideo from JSON data.
@@ -42,6 +44,7 @@ class TimelapseVideo {
       daytimeUrl: json['daytime_url'] as String?,
       nightUrl: json['night_url'] as String?,
       keogramUrl: json['keogram_url'] as String?,
+      slitscanUrl: json['slitscan_url'] as String?,
     );
   }
 
@@ -57,6 +60,7 @@ class TimelapseVideo {
     'daytime_url': daytimeUrl,
     'night_url': nightUrl,
     'keogram_url': keogramUrl,
+    'slitscan_url': slitscanUrl,
   };
 
   /// Create a copy with updated fields.
@@ -71,6 +75,7 @@ class TimelapseVideo {
     String? daytimeUrl,
     String? nightUrl,
     String? keogramUrl,
+    String? slitscanUrl,
   }) {
     return TimelapseVideo(
       id: id ?? this.id,
@@ -83,6 +88,7 @@ class TimelapseVideo {
       daytimeUrl: daytimeUrl ?? this.daytimeUrl,
       nightUrl: nightUrl ?? this.nightUrl,
       keogramUrl: keogramUrl ?? this.keogramUrl,
+      slitscanUrl: slitscanUrl ?? this.slitscanUrl,
     );
   }
 
@@ -104,8 +110,12 @@ class TimelapseVideo {
   /// Check if has keogram image.
   bool get hasKeogram => keogramUrl != null && keogramUrl!.isNotEmpty;
 
+  /// Check if has slitscan image.
+  bool get hasSlitscan => slitscanUrl != null && slitscanUrl!.isNotEmpty;
+
   /// Check if has any daily images.
-  bool get hasImages => hasDaytimeImage || hasNightImage || hasKeogram;
+  bool get hasImages =>
+      hasDaytimeImage || hasNightImage || hasKeogram || hasSlitscan;
 
   @override
   bool operator ==(Object other) =>

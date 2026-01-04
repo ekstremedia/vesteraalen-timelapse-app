@@ -98,94 +98,95 @@ class _CameraCardState extends State<CameraCard>
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Camera name
-                Text(
-                  camera.name,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: AppSpacing.xs),
-
-                // Location/video count and time ago in one row
+                // Camera name and timelapse button in one row
                 Row(
                   children: [
-                    Icon(
-                      camera.location != null
-                          ? Icons.location_on_outlined
-                          : Icons.video_library_outlined,
-                      size: AppDimensions.iconSm,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Flexible(
-                      child: Text(
-                        camera.location ?? l10n.videoCount(camera.videoCount),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (camera.currentImageUpdatedAt != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xs,
-                        ),
-                        child: Text(
-                          '•',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      AnimatedBuilder(
-                        animation: _flashController,
-                        builder: (context, child) {
-                          final curvedValue = Curves.easeInOut.transform(
-                            _flashController.value,
-                          );
-                          final normalColor =
-                              theme.colorScheme.onSurfaceVariant;
-                          return Icon(
-                            Icons.access_time,
-                            size: AppDimensions.iconSm,
-                            color: Color.lerp(
-                              normalColor,
-                              AppStatusColors.connected,
-                              curvedValue,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            camera.name,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          // Location/video count and time ago
+                          Row(
+                            children: [
+                              Icon(
+                                camera.location != null
+                                    ? Icons.location_on_outlined
+                                    : Icons.video_library_outlined,
+                                size: AppDimensions.iconSm,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 2),
+                              Flexible(
+                                child: Text(
+                                  camera.location ??
+                                      l10n.videoCount(camera.videoCount),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (camera.currentImageUpdatedAt != null) ...[
+                                Text(
+                                  ' • ',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                AnimatedBuilder(
+                                  animation: _flashController,
+                                  builder: (context, child) {
+                                    final curvedValue = Curves.easeInOut
+                                        .transform(_flashController.value);
+                                    final normalColor =
+                                        theme.colorScheme.onSurfaceVariant;
+                                    return Icon(
+                                      Icons.access_time,
+                                      size: AppDimensions.iconSm,
+                                      color: Color.lerp(
+                                        normalColor,
+                                        AppStatusColors.connected,
+                                        curvedValue,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  l10n.formatRelativeTime(
+                                    camera.currentImageUpdatedAt!,
+                                  ),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        l10n.formatRelativeTime(camera.currentImageUpdatedAt!),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-
-                const SizedBox(height: AppSpacing.sm),
-
-                // See timelapse button
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: onTimelapsePressed,
-                    icon: const Icon(
-                      Icons.play_circle_outline,
-                      size: AppDimensions.iconMd,
                     ),
-                    label: Text(l10n.seeTimelapse),
-                  ),
+                    const SizedBox(width: AppSpacing.sm),
+                    // See timelapse button
+                    FilledButton.icon(
+                      onPressed: onTimelapsePressed,
+                      icon: const Icon(
+                        Icons.play_circle_outline,
+                        size: AppDimensions.iconMd,
+                      ),
+                      label: Text(l10n.seeTimelapse),
+                    ),
+                  ],
                 ),
               ],
             ),
