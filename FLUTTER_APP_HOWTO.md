@@ -796,16 +796,101 @@ jobs:
 - Use `xcrun altool` for upload (more reliable than GitHub actions)
 - Store API key at `~/.appstoreconnect/private_keys/AuthKey_KEYID.p8`
 
-### Xcode Cloud Setup (Alternative)
+### Xcode Cloud Setup (Recommended for iOS)
 
-1. Open Xcode
-2. **Product** → **Xcode Cloud** → **Create Workflow**
-3. Select your app
-4. Configure:
-   - **Start Conditions:** Push to `main` branch
-   - **Actions:** Archive, TestFlight (Internal Testing)
-   - **Post-Actions:** Notify on completion
-5. First build will prompt for Apple Developer credentials
+Xcode Cloud is Apple's free CI/CD service (25 hours/month free). **Recommended over GitHub Actions** for iOS builds because:
+- **Free:** 25 compute hours/month included
+- **Cost savings:** GitHub Actions macOS runners cost $0.062/min (10x more than Linux)
+- **No secrets management:** Apple handles signing automatically
+- **Native integration:** Built into Xcode and App Store Connect
+
+#### Step 1: Create ci_post_clone.sh Script
+
+For Flutter apps, Xcode Cloud needs a script to install Flutter first. Create `ios/ci_scripts/ci_post_clone.sh`:
+
+```bash
+#!/bin/sh
+
+# Xcode Cloud post-clone script for Flutter apps
+set -e
+
+echo "=== Flutter Setup for Xcode Cloud ==="
+
+cd "$CI_PRIMARY_REPOSITORY_PATH"
+
+# Install Flutter
+git clone https://github.com/flutter/flutter.git --depth 1 -b stable "$HOME/flutter"
+export PATH="$PATH:$HOME/flutter/bin"
+
+flutter config --no-analytics
+
+# Create .env file from Xcode Cloud environment variables
+cat > .env << EOF
+API_BASE_URL=${API_BASE_URL}
+POLLING_INTERVAL=${POLLING_INTERVAL:-60}
+WEBSOCKET_ENABLED=true
+REVERB_HOST=your-domain.com
+REVERB_PORT=443
+REVERB_SCHEME=https
+REVERB_APP_KEY=${REVERB_APP_KEY}
+EOF
+
+# Build Flutter for iOS
+flutter pub get
+flutter build ios --release --no-codesign
+
+echo "=== Flutter Setup Complete ==="
+```
+
+Make it executable:
+```bash
+chmod +x ios/ci_scripts/ci_post_clone.sh
+```
+
+#### Step 2: Set Up Workflow in Xcode
+
+1. Open project in Xcode: `open ios/Runner.xcworkspace`
+2. Go to **Integrate** menu → **Create Workflow...**
+3. Sign in with Apple Developer account if prompted
+4. Connect your GitHub repository
+5. Configure workflow:
+   - **Name:** Deploy to TestFlight
+   - **Start Condition:** Branch changes → `main`
+   - **Actions:** Archive (iOS), TestFlight (Internal Testing)
+
+#### Step 3: Add Environment Variables
+
+In App Store Connect → Xcode Cloud → Your Workflow → Edit:
+1. Go to **Environment** section
+2. Add variables:
+   - `API_BASE_URL` = your API URL
+   - `REVERB_APP_KEY` = your WebSocket key (if using)
+
+#### Step 4: Disable GitHub Actions iOS Workflow
+
+To avoid paying for expensive macOS runners:
+```bash
+mv .github/workflows/ios-deploy.yml .github/workflows/ios-deploy.yml.disabled
+```
+
+#### Triggering Builds
+
+- **Automatic:** Push to `main` branch
+- **Manual (App Store Connect):** Xcode Cloud → Select workflow → Start Build
+- **Manual (Xcode):** Integrate menu → Start Build...
+
+#### Known Warnings (Safe to Ignore)
+
+- `Search path '/Users/local/Library/Developer/DVTDownloads/MetalToolchain/...' not found` - Apple infrastructure issue
+- Deprecation warnings from third-party packages (flutter_inappwebview, url_launcher) - package maintainers need to update
+
+---
+
+### GitHub Actions: iOS Deploy to TestFlight (Legacy)
+
+> **Note:** This approach uses expensive macOS runners ($0.062/min). Consider using Xcode Cloud instead (free 25 hours/month).
+
+Create `.github/workflows/ios-deploy.yml`:
 
 ---
 
@@ -1003,4 +1088,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2026-01-02 (WebSocket config, encryption exemption, xcrun altool for TestFlight)*
+*Last updated: 2026-01-04 (Xcode Cloud setup for Flutter, cost savings vs GitHub Actions)*

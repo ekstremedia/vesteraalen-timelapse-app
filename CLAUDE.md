@@ -250,27 +250,38 @@ git push origin main
 
 **Workflow:** `.github/workflows/android-deploy.yml`
 
-### iOS (GitHub Actions)
+### iOS (Xcode Cloud - Recommended)
 
-**Trigger:** Push to `main` branch
+**Trigger:** Push to `main` branch (automatic)
 
 ```bash
 git push origin main
-# → Builds iOS app (no codesign)
-# → Archives and exports IPA with signing
-# → Uploads to TestFlight
+# → Xcode Cloud clones repo
+# → Runs ios/ci_scripts/ci_post_clone.sh (installs Flutter)
+# → Builds and archives iOS app
+# → Uploads to TestFlight automatically
 ```
 
-**Workflow:** `.github/workflows/ios-deploy.yml`
-**Signing Config:** `ios/ExportOptions.plist`
+**Why Xcode Cloud over GitHub Actions:**
+- **Free:** 25 compute hours/month included
+- **Cost:** GitHub macOS runners cost $0.062/min (10x more than Linux)
+- **Signing:** Apple handles code signing automatically
 
-**Required Secrets:**
-- `IOS_CERTIFICATE_BASE64` - Distribution certificate
-- `IOS_CERTIFICATE_PASSWORD` - Certificate password
-- `IOS_PROVISIONING_PROFILE_BASE64` - App Store profile
-- `APP_STORE_CONNECT_ISSUER_ID` - API authentication
-- `APP_STORE_CONNECT_KEY_ID` - API authentication
-- `APP_STORE_CONNECT_PRIVATE_KEY` - .p8 file contents
+**Setup:** See `FLUTTER_APP_HOWTO.md` → "Xcode Cloud Setup"
+
+**Key Files:**
+- `ios/ci_scripts/ci_post_clone.sh` - Installs Flutter, builds iOS
+- `ios/ExportOptions.plist` - Signing configuration
+
+**Environment Variables (set in App Store Connect → Xcode Cloud):**
+- `API_BASE_URL` - API endpoint
+- `REVERB_APP_KEY` - WebSocket key (if using)
+
+**Manual Build:** App Store Connect → Xcode Cloud → Start Build
+
+### iOS (GitHub Actions - Legacy/Disabled)
+
+The GitHub Actions iOS workflow has been disabled (renamed to `.disabled`) to save costs. Reference file: `.github/workflows/ios-deploy.yml.disabled`
 
 ### Version Management
 
@@ -323,13 +334,24 @@ version: 1.0.0+1
 | WebSocket real-time updates | ✅ Done | Laravel Reverb integration |
 | Silent image refresh | ✅ Done | No loading indicators on background refresh |
 | CI/CD Android | ✅ Done | GitHub Actions + Firebase App Distribution |
-| CI/CD iOS | ✅ Done | GitHub Actions + TestFlight |
+| CI/CD iOS | ✅ Done | Xcode Cloud + TestFlight (free, replaces GitHub Actions) |
 | Google Play Store | 🔲 Pending | Internal testing track |
 | Apple App Store | 🔄 In Progress | TestFlight builds working |
 
 ---
 
 ## Recent Changes
+
+### 2026-01-04
+- **Slitscan image support**: Added `slitscanUrl` field to TimelapseVideo model
+- **Compact camera card layout**: Redesigned to fit 2 cards on phone screen
+  - Camera name/info and button now in single row
+  - Reduced grid padding and spacing
+  - Adjusted aspect ratios for different screen sizes
+- **Xcode Cloud migration**: Moved iOS builds from GitHub Actions to Xcode Cloud
+  - Created `ios/ci_scripts/ci_post_clone.sh` for Flutter setup
+  - Disabled GitHub Actions iOS workflow (saves ~$11/month in macOS runner costs)
+  - Automatic TestFlight deployment on push to main
 
 ### 2026-01-02 (continued)
 - **Comprehensive code cleanup and optimization**:
