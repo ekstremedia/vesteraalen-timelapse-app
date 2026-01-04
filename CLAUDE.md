@@ -333,10 +333,11 @@ version: 1.0.0+1
 | Settings page | ✅ Done | Theme + language + about + WebSocket status |
 | WebSocket real-time updates | ✅ Done | Laravel Reverb integration |
 | Silent image refresh | ✅ Done | No loading indicators on background refresh |
+| Slitscan images | ✅ Done | Shows slitscan alongside keogram |
 | CI/CD Android | ✅ Done | GitHub Actions + Firebase App Distribution |
-| CI/CD iOS | ✅ Done | Xcode Cloud + TestFlight (free, replaces GitHub Actions) |
-| Google Play Store | 🔲 Pending | Internal testing track |
-| Apple App Store | 🔄 In Progress | TestFlight builds working |
+| CI/CD iOS | ✅ Done | Xcode Cloud + App Store Connect (free) |
+| Google Play Store | ⏳ Waiting | ID verification pending |
+| Apple App Store | ✅ Submitted | Version 1.7.0 submitted for review |
 
 ---
 
@@ -351,7 +352,12 @@ version: 1.0.0+1
 - **Xcode Cloud migration**: Moved iOS builds from GitHub Actions to Xcode Cloud
   - Created `ios/ci_scripts/ci_post_clone.sh` for Flutter setup
   - Disabled GitHub Actions iOS workflow (saves ~$11/month in macOS runner costs)
-  - Automatic TestFlight deployment on push to main
+  - Changed distribution from TestFlight to App Store Connect (enables App Store submission)
+- **Version alignment**: Bumped to 1.7.0 to align Android and iOS build numbers
+- **Apple App Store**: Submitted version 1.7.0 for review
+  - Screenshots captured on iPhone 17 Pro Max (1284x2778) and iPad Pro 13" (2048x2732)
+  - App icon (1024x1024) bundled in binary via flutter_launcher_icons
+- **Google Play Store**: Started setup process, ID verification pending
 
 ### 2026-01-02 (continued)
 - **Comprehensive code cleanup and optimization**:

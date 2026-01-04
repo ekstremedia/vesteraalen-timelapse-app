@@ -866,7 +866,19 @@ In App Store Connect → Xcode Cloud → Your Workflow → Edit:
    - `API_BASE_URL` = your API URL
    - `REVERB_APP_KEY` = your WebSocket key (if using)
 
-#### Step 4: Disable GitHub Actions iOS Workflow
+#### Step 4: Configure Distribution for App Store
+
+By default, Xcode Cloud may only distribute to TestFlight (internal testing). To submit to the App Store:
+
+1. In Xcode: **Integrate** → **Manage Workflows**
+2. Edit your workflow
+3. Under **Archive** action, check the **Distribution** settings
+4. Change from "TestFlight (Internal Testing Only)" to **"App Store Connect"**
+5. Save the workflow
+
+**Important:** Existing builds won't be retroactively distributed. You must rebuild after changing this setting for the build to be available for App Store submission.
+
+#### Step 5: Disable GitHub Actions iOS Workflow
 
 To avoid paying for expensive macOS runners:
 ```bash
@@ -901,6 +913,7 @@ Create `.github/workflows/ios-deploy.yml`:
 1. Go to [Google Play Console](https://play.google.com/console)
 2. Pay $25 one-time registration fee
 3. Complete account details
+4. **ID Verification Required**: Google now requires identity verification before you can publish apps. This may take several days.
 
 ### Create App Listing
 
@@ -917,10 +930,22 @@ Create `.github/workflows/ios-deploy.yml`:
 Required before first release:
 - [ ] Short description (80 chars)
 - [ ] Full description (4000 chars)
-- [ ] App icon (512x512 PNG)
+- [ ] App icon (512x512 PNG, high-res icon)
 - [ ] Feature graphic (1024x500 PNG)
-- [ ] Screenshots (phone: 2+, tablet: optional)
+- [ ] Screenshots:
+  - Phone: minimum 2, recommended 4-8
+  - 7" tablet: optional but recommended
+  - 10" tablet: optional but recommended
 - [ ] Privacy policy URL
+
+### Build App Bundle
+
+```bash
+# Build release AAB for Play Store
+flutter build appbundle --release
+
+# Output: build/app/outputs/bundle/release/app-release.aab
+```
 
 ### App Content Declaration
 
@@ -980,13 +1005,48 @@ Required before submission:
 
 ### Prepare for Submission
 
-- [ ] App icon (1024x1024 PNG, no transparency)
+- [ ] App icon (1024x1024 PNG, no transparency) - automatically extracted from app binary
 - [ ] Screenshots for each device size
 - [ ] App preview videos (optional)
 - [ ] Description
 - [ ] Keywords
 - [ ] Support URL
 - [ ] Marketing URL (optional)
+
+### Screenshot Requirements
+
+Screenshots must be exact dimensions. Use iOS Simulator with **Cmd+S** to capture:
+
+| Device | Simulator | Dimensions |
+|--------|-----------|------------|
+| 6.9" iPhone | iPhone 17 Pro Max | 1320x2868 |
+| 6.7" iPhone | iPhone 15 Pro Max | 1290x2796 |
+| 6.5" iPhone | iPhone 14 Pro Max | 1284x2778 |
+| 5.5" iPhone | iPhone 8 Plus | 1242x2208 |
+| 12.9" iPad | iPad Pro 13" | 2048x2732 |
+
+**Capturing screenshots:**
+```bash
+# List available simulators
+xcrun simctl list devices available | grep -i iphone
+
+# Boot a simulator
+xcrun simctl boot "iPhone 17 Pro Max"
+
+# Open Simulator app
+open -a Simulator
+
+# Run Flutter on specific device
+flutter run -d "iPhone 17 Pro Max"
+
+# Take screenshot: Cmd+S in Simulator (saves to Desktop)
+```
+
+**Resizing if needed:**
+```bash
+# Resize to exact dimensions
+sips -z 2778 1284 screenshot.png
+```
 
 ### Upload via Xcode Cloud
 
@@ -1088,4 +1148,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2026-01-04 (Xcode Cloud setup for Flutter, cost savings vs GitHub Actions)*
+*Last updated: 2026-01-04 (Xcode Cloud App Store Connect distribution, screenshot requirements, Google Play ID verification)*

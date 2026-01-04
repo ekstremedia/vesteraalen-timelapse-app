@@ -118,6 +118,18 @@ jobs:
           releaseNotes: ${{ github.event.inputs.release_notes || github.event.head_commit.message }}
           debug: true
 
+      - name: Upload to Google Play (Internal Testing)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: no.ekstremedia.vesteraalen_timelapse
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+          releaseName: ${{ github.run_number }}
+          whatsNewDirectory: distribution/whatsnew
+        continue-on-error: true  # Don't fail build if Play upload fails (e.g., during verification)
+
       - name: Upload App Bundle artifact
         uses: actions/upload-artifact@v4
         with:
