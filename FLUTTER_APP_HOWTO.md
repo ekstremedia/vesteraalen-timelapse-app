@@ -958,13 +958,59 @@ Complete these sections:
 - [ ] News apps declaration
 - [ ] COVID-19 contact tracing
 
-### Upload First Release
+### Upload First Release (Manual)
 
 1. **Testing** → **Internal testing** → **Create new release**
-2. Upload `.aab` file (App Bundle)
+2. Upload `.aab` file (App Bundle): `flutter build appbundle --release`
 3. Add release notes
 4. Save and publish
 5. Wait for review (usually < 24 hours for internal)
+
+### Automatic Deployment via GitHub Actions
+
+After the first manual upload, you can automate future releases:
+
+#### Step 1: Create Google Play API Service Account
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Select your project (or create one linked to Play Console)
+3. **APIs & Services** → Enable **Google Play Android Developer API**
+4. **IAM & Admin** → **Service Accounts** → **Create Service Account**
+   - Name: `google-play-deploy`
+   - Skip role assignment
+5. Click the service account → **Keys** → **Add Key** → **JSON**
+6. Download the JSON file
+
+#### Step 2: Link Service Account in Play Console
+
+1. [Google Play Console](https://play.google.com/console) → **Settings** → **API access**
+2. Click **Refresh service accounts** to see your new account
+3. Click **Grant access** next to `google-play-deploy@...`
+4. **App permissions** → Add your app
+5. **Account permissions** → Enable "Release to production..."
+6. Click **Invite user**
+
+#### Step 3: Add GitHub Secret
+
+- Name: `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
+- Value: Entire contents of the downloaded JSON file
+
+#### Step 4: Create Release Notes
+
+Create `distribution/whatsnew/` directory with locale-specific files:
+```
+distribution/whatsnew/whatsnew-en-US
+distribution/whatsnew/whatsnew-nb-NO
+distribution/whatsnew/whatsnew-nn-NO
+```
+
+Each file contains plain text release notes (max 500 chars).
+
+#### Workflow
+
+The `android-deploy.yml` workflow now:
+1. Builds APK → Uploads to Firebase App Distribution
+2. Builds AAB → Uploads to Google Play (internal testing track)
 
 ### Promote to Production
 
@@ -1148,4 +1194,4 @@ flutter doctor -v
 
 ---
 
-*Last updated: 2026-01-04 (Xcode Cloud App Store Connect distribution, screenshot requirements, Google Play ID verification)*
+*Last updated: 2026-01-04 (Google Play automatic deployment, Xcode Cloud App Store Connect distribution, screenshot requirements)*

@@ -243,12 +243,21 @@ GET /api/app/timelapse/{id}/{date} # Timelapse detail
 
 ```bash
 git push origin main
-# → Builds APK
-# → Auto-increments version
-# → Uploads to Firebase App Distribution
+# → Builds APK → Firebase App Distribution (testers)
+# → Builds AAB → Google Play (internal testing)
+# → Auto-increments build number
 ```
 
 **Workflow:** `.github/workflows/android-deploy.yml`
+
+**Required Secrets:**
+- `FIREBASE_ANDROID_APP_ID` - Firebase app ID
+- `FIREBASE_SERVICE_ACCOUNT` - Firebase service account JSON
+- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` - Google Play API service account JSON
+- `ANDROID_KEYSTORE_BASE64` - Signing keystore (base64)
+- `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS`
+
+**Release Notes:** `distribution/whatsnew/whatsnew-{locale}` (en-US, nb-NO, nn-NO)
 
 ### iOS (Xcode Cloud - Recommended)
 
@@ -357,7 +366,11 @@ version: 1.0.0+1
 - **Apple App Store**: Submitted version 1.7.0 for review
   - Screenshots captured on iPhone 17 Pro Max (1284x2778) and iPad Pro 13" (2048x2732)
   - App icon (1024x1024) bundled in binary via flutter_launcher_icons
-- **Google Play Store**: Started setup process, ID verification pending
+- **Google Play Store**:
+  - Started setup process, ID verification pending
+  - Set up automatic deployment via GitHub Actions (uploads AAB to internal testing)
+  - Created `distribution/whatsnew/` release notes (en-US, nb-NO, nn-NO)
+  - Added `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` secret
 
 ### 2026-01-02 (continued)
 - **Comprehensive code cleanup and optimization**:
