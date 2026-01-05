@@ -114,19 +114,26 @@ class _CameraCardState extends State<CameraCard>
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
-                          // Video count and time ago
+                          // Location/video count and time ago
                           Row(
                             children: [
                               Icon(
-                                Icons.video_library_outlined,
+                                camera.location != null
+                                    ? Icons.location_on_outlined
+                                    : Icons.video_library_outlined,
                                 size: AppDimensions.iconSm,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 2),
-                              Text(
-                                l10n.videoCount(camera.videoCount),
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                              Flexible(
+                                child: Text(
+                                  camera.location ??
+                                      l10n.videoCount(camera.videoCount),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               if (camera.currentImageUpdatedAt != null) ...[
