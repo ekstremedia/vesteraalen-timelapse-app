@@ -113,36 +113,11 @@ class _CameraCardState extends State<CameraCard>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 2),
-                          // Location/video count and time ago
-                          Row(
-                            children: [
-                              Icon(
-                                camera.location != null
-                                    ? Icons.location_on_outlined
-                                    : Icons.video_library_outlined,
-                                size: AppDimensions.iconSm,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 2),
-                              Flexible(
-                                child: Text(
-                                  camera.location ??
-                                      l10n.videoCount(camera.videoCount),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (camera.currentImageUpdatedAt != null) ...[
-                                Text(
-                                  ' • ',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
+                          if (camera.currentImageUpdatedAt != null) ...[
+                            const SizedBox(height: 2),
+                            // Time ago
+                            Row(
+                              children: [
                                 AnimatedBuilder(
                                   animation: _flashController,
                                   builder: (context, child) {
@@ -161,7 +136,7 @@ class _CameraCardState extends State<CameraCard>
                                     );
                                   },
                                 ),
-                                const SizedBox(width: 2),
+                                const SizedBox(width: 4),
                                 Text(
                                   l10n.formatRelativeTime(
                                     camera.currentImageUpdatedAt!,
@@ -171,8 +146,8 @@ class _CameraCardState extends State<CameraCard>
                                   ),
                                 ),
                               ],
-                            ],
-                          ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

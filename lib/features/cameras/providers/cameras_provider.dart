@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vesteraalen_timelapse/core/config/env_config.dart';
@@ -173,10 +174,18 @@ class CamerasNotifier extends Notifier<CamerasState> {
     }
   }
 
-  /// Force refresh cameras from the API and clear image cache.
+  /// Force refresh cameras from the API and clear all caches.
   Future<void> refresh() async {
-    // Clear the disk image cache to ensure fresh images are fetched
+    // Clear Flutter's in-memory image cache (decoded images)
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+
+    // Clear the disk image cache
     await DefaultCacheManager().emptyCache();
+
+    // Clear the API in-memory cache
+    final cacheService = ref.read(cacheServiceProvider);
+    cacheService.clear();
 
     return loadCameras(forceRefresh: true);
   }
@@ -212,5 +221,8 @@ class CamerasNotifier extends Notifier<CamerasState> {
         webSocketService.connect();
       }
     }
+
+    // Immediately fetch fresh data when returning to foreground
+    loadCameras(silent: true, forceRefresh: true);
   }
 }

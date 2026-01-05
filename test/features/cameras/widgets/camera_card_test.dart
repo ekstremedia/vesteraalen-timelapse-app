@@ -29,51 +29,6 @@ void main() {
       expect(find.text('Test Camera Name'), findsOneWidget);
     });
 
-    testWidgets('displays location when provided', (tester) async {
-      final camera = Camera(
-        id: 1,
-        cameraId: 'test_camera',
-        name: 'Test Camera',
-        location: 'Sortland, Vesterålen',
-        videoCount: 5,
-      );
-
-      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Sortland, Vesterålen'), findsOneWidget);
-      expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
-    });
-
-    testWidgets('displays video count', (tester) async {
-      final camera = Camera(
-        id: 1,
-        cameraId: 'test_camera',
-        name: 'Test Camera',
-        videoCount: 42,
-      );
-
-      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('42 videos'), findsOneWidget);
-      expect(find.byIcon(Icons.video_library_outlined), findsOneWidget);
-    });
-
-    testWidgets('displays singular video count', (tester) async {
-      final camera = Camera(
-        id: 1,
-        cameraId: 'test_camera',
-        name: 'Test Camera',
-        videoCount: 1,
-      );
-
-      await tester.pumpWidget(createTestWidget(CameraCard(camera: camera)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('1 video'), findsOneWidget);
-    });
-
     testWidgets('shows placeholder when no image', (tester) async {
       final camera = Camera(
         id: 1,
